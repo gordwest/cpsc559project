@@ -1,9 +1,11 @@
 # CPSC559 Project - Distributed File System
 
+Distributed file system that allows users to upload, download and delete files.
+
 ## TODOs (for MVP)
-- Create proxy and configure
+- Create proxy and configure (another http server? forward requests?)
 - Allow client to make HTTP requests to local server (doesn't like local client and local server)
-- Make client UI a little better
+- Make client UI better (low priority)
 
 # Setup / Run
 ## Client
@@ -27,6 +29,7 @@ node server
 
 
 # Dependencies
+- MongoDB Atlas
 - React
 - Node
 - Express
