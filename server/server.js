@@ -24,6 +24,7 @@ app.use((req, res, next) => {
 
 // retreive all files from db
 app.get('/files', (req, res) => {
+    console.log('Fowarding /files request to mongo..');
     api.get(`/files`)
     .then(response => {
         res.json({ files: response.data });
@@ -33,21 +34,21 @@ app.get('/files', (req, res) => {
 
 // add new file to db
 app.post('/upload', (req, res) => {
-    // api.post(`/upload?name=${req.query.name}&file=${req.query.file}`)
+    console.log(`Fowarding /upload file request for ${req.query.name} to mongo..`);
     uploadFile(req.query.name, req.query.file)
     .then((response) => res.json(response.data))
     .catch((err) => console.log(err));
 });
 
 app.get('/download', (req, res) => {
-    // api.get(`/download?name=${req.query.name}`)
+    console.log(`Fowarding /download file request for ${req.query.name} to mongo..`);
     downloadFile(req.query.name)
     .then((response) => res.json(response.data))
     .catch((err) => console.log(err));
 });
 
 app.post('/delete', (req, res) => {
-    // api.post(`/delete?name=${req.query.name}`)
+    console.log(`Fowarding /delete file request for ${req.query.name} to mongo..`);
     deleteFile(req.query.name)
     .then((response) => res.json(response.data))
     .catch((err) => console.log(err));
