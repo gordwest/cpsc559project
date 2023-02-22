@@ -3,10 +3,18 @@ const bodyParser = require('body-parser');
 const axios = require('axios');
 
 const app = express();
-const PORT = 1234;
+const PORT = 1112;
 app.use(bodyParser.json());
 
 const mongo_base_uri = "https://us-east-1.aws.data.mongodb-api.com/app/filesystem-lkvhv/endpoint";
+
+// allow cross-origin requests
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+});
 
 // retreive all files from db
 app.get('/files', (req, res) => {

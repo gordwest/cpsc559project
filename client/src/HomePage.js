@@ -1,16 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 // import './App.css';
 import NavBar from "./components/NavBar";
 import File from "./components/File";
 import FileUpload from "./components/FileUpload";
+import { retreiveFiles } from "./api";
 
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
+// import { response } from "express";
 
 const MONGO_URI = 'https://us-east-1.aws.data.mongodb-api.com/app/filesystem-lkvhv/endpoint';
+const SERVER_URI = 'http://localhost:1111/';
 
 const center = {
     position: 'absolute',
@@ -19,17 +22,27 @@ const center = {
     transform: 'translate(-50%, -50%)'
 };
 
-
 function Home() {
 
     const [files, setFiles] = useState([]);
 
+    useEffect(() => {
+  const intervalId = setInterval(() => {
+    retreiveFiles()
+    //   .then(response => setFiles(response.data.files))
+    //   .catch(err => console.log(err));
+  }, 5000);
+  return () => clearInterval(intervalId);
+}, []);
+    
     async function refreshFiles() {
         try {
-            const response = await axios.get(MONGO_URI + '/files');
-            console.log(response.data)
-            console.log(response.data[0])
-            setFiles(response.data)
+            const response = await retreiveFiles();
+
+            // console.log(response.data)
+            // console.log(response.data[0])
+            setFiles(response.data.files)
+
         } catch (err) {
           console.log(err)
         }
