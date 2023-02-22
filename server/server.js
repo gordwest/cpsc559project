@@ -6,7 +6,13 @@ const app = express();
 const PORT = 1112;
 app.use(bodyParser.json());
 
-const mongo_base_uri = "https://us-east-1.aws.data.mongodb-api.com/app/filesystem-lkvhv/endpoint";
+const api = axios.create({
+    baseURL: "https://us-east-1.aws.data.mongodb-api.com/app/filesystem-lkvhv/endpoint"
+});
+
+const uploadFile = (name, file) => api.post(`/upload?name=${name}&file=${file}`);
+const deleteFile = (name) => api.post(`/delete?name=${name}`);
+const downloadFile = (name) => api.get(`/download?name=${name}`);
 
 // allow cross-origin requests
 app.use((req, res, next) => {
@@ -18,7 +24,7 @@ app.use((req, res, next) => {
 
 // retreive all files from db
 app.get('/files', (req, res) => {
-    axios.get(mongo_base_uri + "/files")
+    api.get(`/files`)
     .then(response => {
         res.json({ files: response.data });
     })
@@ -27,20 +33,22 @@ app.get('/files', (req, res) => {
 
 // add new file to db
 app.post('/upload', (req, res) => {
-    axios.post(mongo_base_uri + "/upload", null, {
-        params: { 
-            name: req.query.name,
-            file: req.query.file }
-    })
+    // api.post(`/upload?name=${req.query.name}&file=${req.query.file}`)
+    uploadFile(req.query.name, req.query.file)
     .then((response) => res.json(response.data))
     .catch((err) => console.log(err));
 });
 
+app.get('/download', (req, res) => {
+    // api.get(`/download?name=${req.query.name}`)
+    downloadFile(req.query.name)
+    .then((response) => res.json(response.data))
+    .catch((err) => console.log(err));
+});
 
 app.post('/delete', (req, res) => {
-    axios.post(mongo_base_uri + "/delete", null, {
-        params: { name: req.query.name}
-    })
+    // api.post(`/delete?name=${req.query.name}`)
+    deleteFile(req.query.name)
     .then((response) => res.json(response.data))
     .catch((err) => console.log(err));
 });
