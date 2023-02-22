@@ -1,24 +1,17 @@
 import { useState } from 'react';
-import axios from "axios";
 import Button from 'react-bootstrap/Button';
-
-const MONGO_URI = 'https://us-east-1.aws.data.mongodb-api.com/app/filesystem-lkvhv/endpoint';
+import { uploadFile } from '../server_api';
 
 function FileUpload() {
     const [file, setFile] = useState("");
     const [fileBin, setFileBin] = useState("");
 
-    async function uploadFile(name, data) {
-        console.log('UPLOAD FILE: ' + name);
-        console.log('FILE DATA: ' + data);
-
+    async function uploadFileWrapper(name, data) {
+        console.log(name);
+        console.log(data);
         try {
-            const response = await axios.post(MONGO_URI + '/upload', null, { params:
-            {
-                "name" : name,
-                "file" : data
-            }});
-            console.log(response.data)
+            const response = await uploadFile(name, file);
+            console.log(response);
         } catch (err) {
         console.log(err)
         }
@@ -42,9 +35,6 @@ function FileUpload() {
         if (!file) {
             return;
         }
-        console.log('FILE: '+file);
-        console.log('FILEBIN: '+fileBin);
-
         fetch('https://httpbin.org/post', {
         method: 'POST',
         body: file,
@@ -54,7 +44,7 @@ function FileUpload() {
         },
         })
         .then((res) => res.json())
-        .then((data) => uploadFile(file.name, fileBin))
+        .then((data) => uploadFileWrapper(file.name, fileBin))
         .catch((err) => console.error(err));
     };
 
