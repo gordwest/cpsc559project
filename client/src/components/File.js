@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import downloadjs from 'downloadjs';
-import { downloadFile, deleteFile } from "../server_api";
+import { downloadFile, deleteFile } from "../api";
 
 // const MONGO_URI = 'https://us-east-1.aws.data.mongodb-api.com/app/filesystem-lkvhv/endpoint';
 

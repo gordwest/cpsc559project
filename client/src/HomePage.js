@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import NavBar from "./components/NavBar";
 import File from "./components/File";
 import FileUpload from "./components/FileUpload";
-import { retreiveFiles } from "./server_api";
+import { retreiveFiles } from "./api";
 
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';

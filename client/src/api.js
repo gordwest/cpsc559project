@@ -19,8 +19,7 @@ export const retreiveFiles = () => {
 // export const uploadFile = (name, file) => api.post(`/upload`, {name, file});
 // export const deleteFile = (name) => api.post(`/delete`, {name});
 // export const downloadFile = (name) => api.get(`/download`, {name});
+
 export const uploadFile = (name, file) => api.post(`/upload?name=${name}&file=${file}`);
 export const deleteFile = (name) => api.post(`/delete?name=${name}`);
 export const downloadFile = (name) => api.get(`/download?name=${name}`);
-
-

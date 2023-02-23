@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Button from 'react-bootstrap/Button';
-import { uploadFile } from '../server_api';
+import { uploadFile } from '../api';
 
 function FileUpload() {
     const [file, setFile] = useState("");
