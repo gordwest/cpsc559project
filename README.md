@@ -1,21 +1,13 @@
 # CPSC559 Project - Distributed File System
 
-Distributed file system that allows users to upload, download and delete files.
+Distributed file system that allows users to upload, download and delete files.  
+Client --> Proxy --> Server --> Mongodb Atlas
 
 ## TODOs (for MVP)
 - Make client UI better (low priority)
 
 # Setup / Run
-## Client
-```bash
-# get packages
-cd client
-npm ci
-
-# run client
-npm start
-```
-## Server
+### Server
 ```bash
 # get packages
 cd server
@@ -25,11 +17,31 @@ npm ci
 node server
 ```
 
+### Proxy
+```bash
+# get packages
+cd proxy
+npm ci
+
+# run server
+node proxy
+```
+
+### Client
+```bash
+# get packages
+cd client
+npm ci
+
+# run client
+npm start
+```
+
 # HTTP Servers
-### Proxy (port 1234)
+### Proxy - (port 1234)
 Forwards http requests from the client to the server
 
-### Server (port 1112)
+### Server - (port 1112)
 Forwards http requests from the proxy to mongodb
 
 # Dependencies
