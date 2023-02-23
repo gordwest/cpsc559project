@@ -23,7 +23,7 @@ node server
 cd proxy
 npm ci
 
-# run server
+# run proxy
 node proxy
 ```
 
