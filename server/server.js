@@ -1,9 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const axios = require('axios');
-
 const app = express();
-const PORT = 1112;
+
+const PORT = 1111;
 app.use(bodyParser.json());
 
 const api = axios.create({
@@ -24,7 +24,7 @@ app.use((req, res, next) => {
 
 // retreive all files from db
 app.get('/files', (req, res) => {
-    console.log('Fowarding /files request to mongo..');
+    console.log(`Forwarding ${req.method} ${req.path} request to mongodb..`);
     api.get(`/files`)
     .then(response => {
         res.json({ files: response.data });
@@ -34,21 +34,21 @@ app.get('/files', (req, res) => {
 
 // add new file to db
 app.post('/upload', (req, res) => {
-    console.log(`Fowarding /upload file request for ${req.query.name} to mongo..`);
+    console.log(`Forwarding ${req.method} ${req.path} request to mongodb..`);
     uploadFile(req.query.name, req.query.file)
     .then((response) => res.json(response.data))
     .catch((err) => console.log(err));
 });
 
 app.get('/download', (req, res) => {
-    console.log(`Fowarding /download file request for ${req.query.name} to mongo..`);
+    console.log(`Forwarding ${req.method} ${req.path} request to mongodb..`);
     downloadFile(req.query.name)
     .then((response) => res.json(response.data))
     .catch((err) => console.log(err));
 });
 
 app.post('/delete', (req, res) => {
-    console.log(`Fowarding /delete file request for ${req.query.name} to mongo..`);
+    console.log(`Forwarding ${req.method} ${req.path} request to mongodb..`);
     deleteFile(req.query.name)
     .then((response) => res.json(response.data))
     .catch((err) => console.log(err));

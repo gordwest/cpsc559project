@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-// import './App.css';
 import NavBar from "./components/NavBar";
 import File from "./components/File";
 import FileUpload from "./components/FileUpload";
@@ -8,10 +7,6 @@ import { retreiveFiles } from "./api";
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-// import { response } from "express";
-
-// const MONGO_URI = 'https://us-east-1.aws.data.mongodb-api.com/app/filesystem-lkvhv/endpoint';
-// const SERVER_URI = 'http://localhost:1111/';
 
 function Home() {
 
@@ -20,7 +15,7 @@ function Home() {
     useEffect(() => {
         const intervalId = setInterval(() => {
             refreshFiles()
-        }, 3000);
+        }, 5000);
         return () => clearInterval(intervalId);
     }, []);
     
@@ -38,11 +33,6 @@ function Home() {
     <div onLoad= {() => refreshFiles()}>
         <NavBar/>
         <Container>
-            {/* <Row>
-                <Button onClick={() => refreshFiles()}>
-                    Refresh Files
-                </Button>
-            </Row> */}
         <FileUpload/>
         </Container>
         <Container >

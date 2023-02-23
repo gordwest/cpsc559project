@@ -1,18 +1,27 @@
+/*
+    hmm DevServer Proxy essentially fixes CORS Errors...
+    so we could potentially remove the cors rule from server.js ? 
+    line 17-23
+    - havent tried. ...low priority.
+
+    // how to proxy https://www.npmjs.com/package/http-proxy-middleware#working-examples
+*/
+
 const express = require('express');
-const bodyParser = require('body-parser');
-const axios = require('axios');
-
 const app = express();
-const PORT = 1234;
-app.use(bodyParser.json());
+const PORT = 2222;
 
-const api = axios.create({
-    baseURL: 'http://localhost:1112/' // address to server
+// Proxy middleware
+const { createProxyMiddleware } = require('http-proxy-middleware');
+const target = 'http://localhost:1111'; // target host (Server URL)
+const proxy = createProxyMiddleware({
+  target,
+  changeOrigin: true,
+
+  onProxyReq: function onProxyReq(proxyReq, req, res) {
+    console.log(`Forwarding ${req.method} ${req.path} request to server..`);
+},
 });
-
-const uploadFile = (name, file) => api.post(`/upload?name=${name}&file=${file}`);
-const deleteFile = (name) => api.post(`/delete?name=${name}`);
-const downloadFile = (name) => api.get(`/download?name=${name}`);
 
 // allow cross-origin requests
 app.use((req, res, next) => {
@@ -22,42 +31,11 @@ app.use((req, res, next) => {
     next();
 });
 
-// retreive all files from db
-app.get('/files', (req, res) => {
-    console.log('Fowarding /files request to server..');
-    api.get(`/files`)
-    .then(response => {
-        res.json({ files: response.data });
-    })
-    .catch((err) => console.log(err));
-});
-
-// add new file to db
-app.post('/upload', (req, res) => {
-    console.log(`Fowarding /upload file request for ${req.query.name} to server..`);
-    uploadFile(req.query.name, req.query.file)
-    .then((response) => res.json(response.data))
-    .catch((err) => console.log(err));
-});
-
-app.get('/download', (req, res) => {
-    console.log(`Fowarding /download file request for ${req.query.name} to server..`);
-    downloadFile(req.query.name)
-    .then((response) => res.json(response.data))
-    .catch((err) => console.log(err));
-});
-
-app.post('/delete', (req, res) => {
-    console.log(`Fowarding /delete file request for ${req.query.name} to server..`);
-    deleteFile(req.query.name)
-    .then((response) => res.json(response.data))
-    .catch((err) => console.log(err));
-});
-
-app.use((req, res) => {
-    res.status(404).send();
-});
+// Start proxy server on port
+app.use('/', proxy);
 
 app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
+  console.log(`Server listening on port ${PORT}`);
 });
+
+module.exports = app;

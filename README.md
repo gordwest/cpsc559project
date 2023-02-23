@@ -42,10 +42,10 @@ npm start
 ```
 
 # HTTP Servers
-### Proxy - (port 1234)
+### Proxy - (port 2222)
 Forwards http requests from the client to the server
 
-### Server - (port 1112)
+### Server - (port 1111)
 Forwards http requests from the proxy to mongodb
 
 # Dependencies
