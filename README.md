@@ -1,7 +1,11 @@
 # CPSC559 Project - Distributed File System
 
-Distributed file system that allows users to upload, download and delete files.  
-Client --> Proxy --> Server --> Mongodb Atlas
+Distributed file system that allows users to upload, download and delete files. 
+<pre>
+Client --> Proxy --> Server --> 
+                                Mongodb Atlas
+Client <-- Proxy <-- Server <-- 
+</pre> 
 
 ## TODOs (for MVP)
 - Make client UI better (low priority)
