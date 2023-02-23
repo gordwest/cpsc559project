@@ -7,7 +7,7 @@ const PORT = 1112;
 app.use(bodyParser.json());
 
 const api = axios.create({
-    baseURL: "https://us-east-1.aws.data.mongodb-api.com/app/filesystem-lkvhv/endpoint"
+    baseURL: "https://us-east-1.aws.data.mongodb-api.com/app/filesystem-lkvhv/endpoint" // address to mongodb
 });
 
 const uploadFile = (name, file) => api.post(`/upload?name=${name}&file=${file}`);

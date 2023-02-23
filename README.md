@@ -3,8 +3,6 @@
 Distributed file system that allows users to upload, download and delete files.
 
 ## TODOs (for MVP)
-- Create proxy and configure (another http server? forward requests?)
-- Allow client to make HTTP requests to local server (doesn't like local client and local server)
 - Make client UI better (low priority)
 
 # Setup / Run
@@ -27,6 +25,12 @@ npm ci
 node server
 ```
 
+# HTTP Servers
+### Proxy (port 1234)
+Forwards http requests from the client to the server
+
+### Server (port 1112)
+Forwards http requests from the proxy to mongodb
 
 # Dependencies
 - MongoDB Atlas

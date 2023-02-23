@@ -1,29 +1,29 @@
-import React, { useState } from "react";
+import React from "react";
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import downloadjs from 'downloadjs';
-import { downloadFile, deleteFile } from "../server_api";
+import { downloadFile, deleteFile } from "../api";
 
 // const MONGO_URI = 'https://us-east-1.aws.data.mongodb-api.com/app/filesystem-lkvhv/endpoint';
 
 function File(props) {
 
     const handleDownloadClick = async () => {
-        downloadFile(props.name)
-        .then ( (response) => { downloadjs(response.data.file, props.name) } )
+        downloadFile(props.file.name)
+        .then ( (response) => { downloadjs(response.data.file, props.file.name) } )
         .catch ( (err) => { console.log(err) } )
     };
 
     const handleDeleteClick = async () => {
-      deleteFile(props.name)
-      .then ( (response) => { console.log(response, props.name) } )
+      deleteFile(props.file.name)
+      .then ( (response) => { console.log(response, props.file.name) } )
       .catch ( (err) => { console.log(err) } )
     };
 
   return (
     <Card style={{ width: '18rem' }}>
       <Card.Body>
-        <Card.Title>{props.name}</Card.Title>
+        <Card.Title>{props.file.name}</Card.Title>
         <Button onClick={() => handleDownloadClick()}>
             Download
         </Button>

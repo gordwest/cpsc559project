@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import NavBar from "./components/NavBar";
 import File from "./components/File";
 import FileUpload from "./components/FileUpload";
-import { retreiveFiles } from "./server_api";
+import { retreiveFiles } from "./api";
 
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -48,13 +48,13 @@ function Home() {
         <Container >
             <Row>
                 <Col>
-                    { files.slice(0,3).map(file => <File name={file.name}/>)} {/* first 3 files */}
+                    { files.slice(0,3).map(file => <File key={file._id} file={file}/>)} {/* first 3 files */}
                 </Col>
                 <Col>
-                    { files.slice(3, 5).map(file => <File name={file.name}/>)} {/* next 3 files */}
+                    { files.slice(3, 5).map(file => <File key={file._id} file={file}/>)} {/* next 3 files */}
                 </Col>
                 <Col>
-                    { files.slice(5, files.length).map(file => <File name={file.name}/>)} {/* last 3+ files */}
+                    { files.slice(5, files.length).map(file => <File key={file._id} file={file}/>)} {/* last 3+ files */}
                 </Col>
             </Row>
         </Container>
