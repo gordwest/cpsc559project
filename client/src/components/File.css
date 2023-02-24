@@ -1,15 +1,97 @@
+@import url('https://fonts.google.com/specimen/Source+Code+Pro?query=code');
+html,body{
+    font-family: 'Source Code Pro', monospace;
+}
+
+.file {
+    background-color: black;
+    border-width: 2px;
+    border-color: #4AF626;
+    border-radius: 15px;
+    box-shadow: 2px 2px 8px 0px #4AF626;
+}
+
+.file:hover {
+    background-color: black;
+    border-width: 2px;
+    border-color: #4AF626;
+    border-radius: 15px;
+    box-shadow: 6px 6px 8px 0px #4AF626;
+    transform: scale(1.1);
+}
+
 .file_card_title {
+    border-radius: 10px;
+    color: #000000;
+    background-color: #4AF626;
     display: flex;
     justify-content: center;
-    padding-bottom: 1rem;
-    padding-top: 0.3rem;
+    padding-bottom: 2rem;
+    padding-top: 2rem;
     font-size: larger;
     font-weight: 600;
-    font-family: Helvetica, sans-serif;
 }
 
 #file_card_button_row {
     display: flex;
     justify-content: space-around;
-    font-family: Helvetica, sans-serif;
+}
+
+.file-upload-button {
+    border: 2px solid #4AF626;
+    border-radius: 0.5rem;
+    color: #4AF626;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-weight: 900;
+    font-size: 24px;
+}
+
+.file-upload-button:hover {
+    border: 2px solid #4AF626;
+    background-color: #4AF626;
+    border-radius: 0.5rem;
+    color: #000000;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-weight: 900;
+    font-size: 24px;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.buttonz {
+    background-color: black;
+    border: solid 2px #4AF626;
+    color: #4AF626;
+    font-weight: 900;
+}
+
+.buttonz:hover {
+    background-color: #4AF626;
+    border: solid 2px #4AF626;
+    color: black;
+    font-weight: 900;
+}
+
+.uploadbuttonz {
+    background-color: black;
+    border: solid 2px #4AF626;
+    color: #4AF626;
+    margin-left: 5rem;
+    font-weight: 900;
+    font-size: 24px;
+}
+
+.uploadbuttonz:hover {
+    background-color: #4AF626;
+    border: solid 2px #4AF626;
+    color: black;
+    margin-left: 5rem;
+    font-weight: 900;
+    font-size: 24px;
 }

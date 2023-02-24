@@ -20,6 +20,7 @@ const proxy = createProxyMiddleware({
 
   onProxyReq: function onProxyReq(proxyReq, req, res) {
     console.log(`Forwarding ${req.method} ${req.path} request to server..`);
+    console.log(`Forwarding ${req.params.file}`);
 },
 });
 

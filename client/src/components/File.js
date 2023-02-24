@@ -3,10 +3,14 @@ import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import downloadjs from 'downloadjs';
 import { downloadFile, deleteFile } from "../api";
-import Row from 'react-bootstrap/Row';
 import './File.css';
+import filepng from '../assets/file.png';
 
-// const MONGO_URI = 'https://us-east-1.aws.data.mongodb-api.com/app/filesystem-lkvhv/endpoint';
+const icon = {
+    height: '1.3rem',
+    paddingRight: '0.5rem',
+    alignContent: 'center',
+}
 
 function File(props) {
 
@@ -23,17 +27,20 @@ function File(props) {
     };
 
   return (
-    <Card border="primary" className="mt-4 mb-4" class="card mt-4 mb-4" style={{ width: '18rem', padding: '1rem'}}>
+    <Card className="card mt-3 mb-3 ms-3 me-3 file" style={{ width: '18rem', padding: '1rem'}}>
+    <Card.Title className="file_card_title" >
+        <img src={filepng} style={icon}/>
+        {props.file.name}
+        </Card.Title>
       <Card.Body>
-        <Card.Title class="file_card_title" >{props.file.name}</Card.Title>
-        <Row id="file_card_button_row">
-          <Button size="md" onClick={() => handleDownloadClick()}>
+        <div id="file_card_button_row">
+          <Button className="buttonz" size="md" onClick={() => handleDownloadClick()}>
               Download
           </Button>
-          <Button size="md" onClick={() => handleDeleteClick()}>
+          <Button className="buttonz" size="md" onClick={() => handleDeleteClick()}>
               Delete
           </Button>
-        </Row>
+        </div>
       </Card.Body>
     </Card>
   );

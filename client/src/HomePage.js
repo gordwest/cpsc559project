@@ -3,10 +3,7 @@ import NavBar from "./components/NavBar";
 import File from "./components/File";
 import FileUpload from "./components/FileUpload";
 import { retreiveFiles } from "./api";
-
 import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 
 function Home() {
 
@@ -32,14 +29,14 @@ function Home() {
     <div onLoad= {() => refreshFiles()}>
         <NavBar/>
         <Container className="mt-5 mb-5">
-            <Row class="file_upload_bar">
+            <div class="file_upload_bar">
                 <FileUpload/>
-            </Row>
+            </div>
         </Container>
-        <Container class="file_format">
-            <Row class="file_format_row" className="justify-content-md-evenly justify-content-center">
-                { files.map(file => <File key={file._id} file={file}/>)} {/* last 3+ files */}
-            </Row>
+        <Container>
+            <div class="file_format">
+                { files.map(file => <File key={file._id} file={file}/>)}
+            </div>
         </Container>
     </div>
   );
