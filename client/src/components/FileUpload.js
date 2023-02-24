@@ -49,9 +49,9 @@ function FileUpload() {
     };
 
     return (
-        <div>
-        <input type="file" onChange={handleFileChange} />
-        <Button onClick={handleUploadClick}>Upload</Button>
+        <div style={{ border: 'solid black 2px', borderRadius: '0.5rem', backgroundColor: '#F5F5F5'}}>
+        <input type="file" onChange={handleFileChange} style={{ margin:'1rem'}}/>
+        <Button onClick={handleUploadClick} style={{  margin:'1rem', fontFamily: 'Helvetica'}}>Upload</Button>
         </div>
     );
 }

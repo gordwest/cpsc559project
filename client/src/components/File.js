@@ -3,6 +3,8 @@ import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import downloadjs from 'downloadjs';
 import { downloadFile, deleteFile } from "../api";
+import Row from 'react-bootstrap/Row';
+import './File.css';
 
 // const MONGO_URI = 'https://us-east-1.aws.data.mongodb-api.com/app/filesystem-lkvhv/endpoint';
 
@@ -21,15 +23,17 @@ function File(props) {
     };
 
   return (
-    <Card style={{ width: '18rem' }}>
+    <Card border="primary" className="mt-4 mb-4" class="card mt-4 mb-4" style={{ width: '18rem', padding: '1rem'}}>
       <Card.Body>
-        <Card.Title>{props.file.name}</Card.Title>
-        <Button onClick={() => handleDownloadClick()}>
-            Download
-        </Button>
-        <Button onClick={() => handleDeleteClick()}>
-            Delete
-        </Button>
+        <Card.Title class="file_card_title" >{props.file.name}</Card.Title>
+        <Row id="file_card_button_row">
+          <Button size="md" onClick={() => handleDownloadClick()}>
+              Download
+          </Button>
+          <Button size="md" onClick={() => handleDeleteClick()}>
+              Delete
+          </Button>
+        </Row>
       </Card.Body>
     </Card>
   );

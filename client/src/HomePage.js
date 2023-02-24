@@ -28,24 +28,17 @@ function Home() {
         }
       }
 
-
   return (
     <div onLoad= {() => refreshFiles()}>
         <NavBar/>
-        <Container>
-        <FileUpload/>
+        <Container className="mt-5 mb-5">
+            <Row class="file_upload_bar">
+                <FileUpload/>
+            </Row>
         </Container>
-        <Container >
-            <Row>
-                <Col>
-                    { files.slice(0,3).map(file => <File key={file._id} file={file}/>)} {/* first 3 files */}
-                </Col>
-                <Col>
-                    { files.slice(3, 5).map(file => <File key={file._id} file={file}/>)} {/* next 3 files */}
-                </Col>
-                <Col>
-                    { files.slice(5, files.length).map(file => <File key={file._id} file={file}/>)} {/* last 3+ files */}
-                </Col>
+        <Container class="file_format">
+            <Row class="file_format_row" className="justify-content-md-evenly justify-content-center">
+                { files.map(file => <File key={file._id} file={file}/>)} {/* last 3+ files */}
             </Row>
         </Container>
     </div>
