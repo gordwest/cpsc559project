@@ -8,7 +8,11 @@ Client <-- Proxy <-- Server <--
 </pre> 
 
 ## TODOs (for MVP)
-- Make client UI better (low priority)
+- Fix UploadFile request -> sending json body    
+[Error] Preflight response is not successful. Status code: 404  
+[Error] XMLHttpRequest cannot load http://localhost:2222/upload due to access control checks.  
+[Log] AxiosError {stack: "AxiosError@http://localhost:3000/static/js/bundle.…ttp://localhost:3000/static/js/bundle.js:55022:77", message: "Network Error", name: "AxiosError", code: "ERR_NETWORK", config: Object, …} (bundle.js, line 522)  
+[Error] Failed to load resource: Preflight response is not successful. Status code: 404 (upload, line 0)
 
 # Setup / Run
 ### Server
