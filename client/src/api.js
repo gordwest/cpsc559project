@@ -18,7 +18,7 @@ export const retreiveFiles = () => {
 };
   
 // export const uploadFile = (name, file) => api.post(`/upload?name=${name}&file=${file}`);
-export const uploadFile = (name, file) => api.post(`/upload`, {name:name, file:file}, {params: { 'api-version': '3.0' }, headers: {'content-type': 'application/json'}});
+export const uploadFile = (name, file) => api.post(`/upload`, {name:name, file:file}, {headers: {'content-type': 'application/json'}});
 export const deleteFile = (name) => api.post(`/delete?name=${name}`);
 export const downloadFile = (name) => api.get(`/download?name=${name}`);
 

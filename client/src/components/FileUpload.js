@@ -2,7 +2,6 @@ import { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import { uploadFile } from '../api';
 import './File.css';
-import axios from 'axios';
 
 const uploadBox = {
     border: 'solid #4AF626 2px',
@@ -45,6 +44,7 @@ function FileUpload() {
             var reader = new FileReader();
             reader.readAsDataURL(event.target.files[0]); 
             reader.onloadend = function() {
+                // const binData = reader.result.replace(';', '$3B'); // escape semicolon
                 setFileBin(reader.result);
                 console.log(reader.result);
             }

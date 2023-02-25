@@ -16,6 +16,7 @@ function File(props) {
 
     const handleDownloadClick = async () => {
         downloadFile(props.file.name)
+        // .then ( (response) => { downloadjs(escapeSemiColon(response.data.file), props.file.name) } )
         .then ( (response) => { downloadjs(response.data.file, props.file.name) } )
         .catch ( (err) => { console.log(err) } )
     };
