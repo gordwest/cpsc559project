@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import { uploadFile } from '../api';
 import './File.css';
+import axios from 'axios';
 
 const uploadBox = {
     border: 'solid #4AF626 2px',
@@ -45,6 +46,7 @@ function FileUpload() {
             reader.readAsDataURL(event.target.files[0]); 
             reader.onloadend = function() {
                 setFileBin(reader.result);
+                console.log(reader.result);
             }
         }
     };
@@ -68,7 +70,7 @@ function FileUpload() {
 
     return (
         <div style={uploadBox}>
-            <label class="file-upload-button">
+            <label className="file-upload-button">
                 <input type="file" onChange={handleFileChange} />
                 Choose File
             </label>

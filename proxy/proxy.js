@@ -20,7 +20,6 @@ const proxy = createProxyMiddleware({
 
   onProxyReq: function onProxyReq(proxyReq, req, res) {
     console.log(`Forwarding ${req.method} ${req.path} request to server..`);
-    console.log(`Forwarding ${req.params.file}`);
 },
 });
 
@@ -28,7 +27,7 @@ const proxy = createProxyMiddleware({
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Allow-Headers', 'content-type');
     next();
 });
 

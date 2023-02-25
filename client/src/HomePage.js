@@ -20,6 +20,7 @@ function Home() {
         try {
             const response = await retreiveFiles();
             setFiles(response.files)
+            // setFiles(response)
         } catch (err) {
           console.log(err)
         }
