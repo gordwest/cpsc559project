@@ -56,7 +56,7 @@ https://us-east-1.aws.data.mongodb-api.com/app/filesystem-lkvhv/endpoint/files
 ### POST /Upload
 Insert a new file document into the database.  
 - Params: name
-- Body: { file : <fileData>}
+- Body: { file : < fileData >}
 ```
 https://us-east-1.aws.data.mongodb-api.com/app/filesystem-lkvhv/endpoint/upload
 ```
