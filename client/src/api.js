@@ -18,8 +18,8 @@ export const retreiveFiles = () => {
 };
   
 // export const uploadFile = (name, file) => api.post(`/upload?name=${name}&file=${file}`);
-// export const uploadFile = (name, file) => api.post(`/upload`, {name:name, file:file}, {headers: {'content-type': 'application/json'}});
-export const uploadFile = (name, file) => api.post(`/upload?name=${name}`, file, {headers: {'content-type': 'text/plain'}});
+export const uploadFile = (name, file) => api.post(`/upload?name=${name}`, {file:file}, {headers: {'content-type': 'application/json'}});
+//export const uploadFile = (name, file) => api.post(`/upload?name=${name}`, file, {headers: {'content-type': 'text/plain'}});
 export const deleteFile = (name) => api.post(`/delete?name=${name}`);
 export const downloadFile = (name) => api.get(`/download?name=${name}`);
 

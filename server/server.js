@@ -13,7 +13,7 @@ const api = axios.create({
 // const uploadFile = (name, file) => api.post(`/upload?name=${name}&file=${file}`);
 // const uploadFile = (name, file) => api.post(`/upload`, {name:name, file:file}, {headers: {'content-type': 'application/json'}});
 // const uploadFile = (name, file) => api.post(`/upload?name=${name}`, "FILE DATA", {headers: {'content-type': 'text/plain'}});
-const uploadFile = (name, file) => api.post(`/upload?name=${name}`, file, {headers: {'content-type': 'text/plain'}});
+const uploadFile = (name, file) => api.post(`/upload?name=${name}`, {file:file}, {headers: {'content-type': 'application/json'}});
 const deleteFile = (name) => api.post(`/delete?name=${name}`);
 const downloadFile = (name) => api.get(`/download?name=${name}`);
 
@@ -39,7 +39,7 @@ app.get('/files', (req, res) => {
 app.post('/upload', (req, res) => {
     console.log(`Forwarding ${req.method} ${req.path} request to mongodb..`);
     console.log("SERVER: " + req.query.name, req.body);
-    uploadFile(req.query.name, req.body)
+    uploadFile(req.query.name, req.body.file)
     .then((response) => res.json(response.data))
     .catch((err) => console.log(err));
 });
