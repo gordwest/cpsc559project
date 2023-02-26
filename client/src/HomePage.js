@@ -30,12 +30,12 @@ function Home() {
     <div onLoad= {() => refreshFiles()}>
         <NavBar/>
         <Container className="mt-5 mb-5">
-            <div class="file_upload_bar">
+            <div className="file_upload_bar">
                 <FileUpload/>
             </div>
         </Container>
         <Container>
-            <div class="file_format">
+            <div className="file_format">
                 { files.map(file => <File key={file._id} file={file}/>)}
             </div>
         </Container>

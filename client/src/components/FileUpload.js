@@ -25,6 +25,7 @@ function FileUpload() {
     const [fileBin, setFileBin] = useState("");
 
     async function uploadFileWrapper(name, data) {
+        console.log("Uploading the following file:");
         console.log(name);
         console.log(data);
         try {
