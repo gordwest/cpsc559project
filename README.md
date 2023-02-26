@@ -1,18 +1,10 @@
 # CPSC559 Project - Distributed File System
-
 Distributed file system that allows users to upload, download and delete files. 
 <pre>
 Client --> Proxy --> Server --> 
                                 Mongodb Atlas
 Client <-- Proxy <-- Server <-- 
 </pre> 
-
-## TODOs (for MVP)
-- Fix UploadFile request -> sending json body    
-[Error] Preflight response is not successful. Status code: 404  
-[Error] XMLHttpRequest cannot load http://localhost:2222/upload due to access control checks.  
-[Log] AxiosError {stack: "AxiosError@http://localhost:3000/static/js/bundle.…ttp://localhost:3000/static/js/bundle.js:55022:77", message: "Network Error", name: "AxiosError", code: "ERR_NETWORK", config: Object, …} (bundle.js, line 522)  
-[Error] Failed to load resource: Preflight response is not successful. Status code: 404 (upload, line 0)
 
 # Setup / Run
 ### Server
@@ -46,11 +38,42 @@ npm start
 ```
 
 # HTTP Servers
-### Proxy - (port 2222)
-Forwards http requests from the client to the server
+### Proxy -> (http://localhost:2222)
+- Forwards HTTP requests between the clients and the servers
 
-### Server - (port 1111)
-Forwards http requests from the proxy to mongodb
+### Server -> (http://localhost:1111)
+- Receives HTTP requests from the proxy
+- Interacts directly with MongoDB
+
+# MongoDB Endpoints
+### GET /Files
+Returns all files in the database.  
+- Params: NONE  
+- Body: NONE
+```
+https://us-east-1.aws.data.mongodb-api.com/app/filesystem-lkvhv/endpoint/files
+```
+### POST /Upload
+Insert a new file document into the database.  
+- Params: name
+```
+https://us-east-1.aws.data.mongodb-api.com/app/filesystem-lkvhv/endpoint/upload
+```
+- Body: { file : <fileData>}
+### GET /Download
+Download an existing file from the database.  
+- Params: name  
+- Body: NONE
+```
+https://us-east-1.aws.data.mongodb-api.com/app/filesystem-lkvhv/endpoint/download
+```
+### POST /Delete
+Remove an existing file from the database.  
+- Params: name  
+- Body: NONE
+```
+https://us-east-1.aws.data.mongodb-api.com/app/filesystem-lkvhv/endpoint/delete
+```
 
 # Dependencies
 - MongoDB Atlas

@@ -25,9 +25,8 @@ function FileUpload() {
     const [fileBin, setFileBin] = useState("");
 
     async function uploadFileWrapper(name, data) {
-        console.log("Uploading the following file:");
         console.log(name);
-        console.log(data);
+        // console.log(data);
         try {
             const response = await uploadFile(name, data);
             console.log(response);
@@ -45,7 +44,6 @@ function FileUpload() {
             var reader = new FileReader();
             reader.readAsDataURL(event.target.files[0]); 
             reader.onloadend = function() {
-                // const binData = reader.result.replace(';', '$3B'); // escape semicolon
                 setFileBin(reader.result);
                 console.log(reader.result);
             }

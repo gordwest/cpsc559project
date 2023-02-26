@@ -1,12 +1,3 @@
-/*
-    hmm DevServer Proxy essentially fixes CORS Errors...
-    so we could potentially remove the cors rule from server.js ? 
-    line 17-23
-    - havent tried. ...low priority.
-
-    // how to proxy https://www.npmjs.com/package/http-proxy-middleware#working-examples
-*/
-
 const express = require('express');
 const app = express();
 const PORT = 2222;
@@ -31,9 +22,10 @@ app.use((req, res, next) => {
     next();
 });
 
-app.options('/upload', (req,res) => {
-    res.status(204).send();
-});
+// Only required in server.js
+// app.options('/upload', (req,res) => {
+//     res.status(204).send();
+// });
 
 // Start proxy server on port
 app.use('/', proxy);
