@@ -21,7 +21,7 @@ const downloadFile = (name) => api.get(`/download?name=${name}`);
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'content-type');
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     next();
 });
 
@@ -56,6 +56,10 @@ app.post('/delete', (req, res) => {
     deleteFile(req.query.name)
     .then((response) => res.json(response.data))
     .catch((err) => console.log(err));
+});
+
+app.options('/upload', (req,res) => {
+    res.status(204).send();
 });
 
 app.use((req, res) => {
