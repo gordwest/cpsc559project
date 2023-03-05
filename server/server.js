@@ -14,6 +14,11 @@ const uploadFile = (name, file) => api.post(`/upload?name=${name}`, {file:file},
 const deleteFile = (name) => api.post(`/delete?name=${name}`);
 const downloadFile = (name) => api.get(`/download?name=${name}`);
 
+let replicaNodes = ['http://localhost:1111', 'http://localhost:1112', 'http://localhost:1113'];
+
+
+
+
 // // allow cross-origin requests (only required in proxy.js)
 // app.use((req, res, next) => {
 //     res.setHeader('Access-Control-Allow-Origin', '*');
