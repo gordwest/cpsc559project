@@ -14,7 +14,9 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 // },
 // });
 
+
 const targets = ['http://localhost:1111', 'http://localhost:1112', 'http://localhost:1113']; // target hosts (replica servers URLs)
+// creates a separate proxy for each target hosts
 const proxies = targets.map(target => createProxyMiddleware({
   target,
   changeOrigin: true,
