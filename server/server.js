@@ -10,10 +10,27 @@ const api = axios.create({
     baseURL: "https://us-east-1.aws.data.mongodb-api.com/app/filesystem-lkvhv/endpoint" // address to mongodb
 });
 
-const uploadFile = (name, file) => api.post(`/upload?name=${name}`, {file:file}, {headers: {'content-type': 'application/json'}});
-const deleteFile = (name) => api.post(`/delete?name=${name}`);
-const downloadFile = (name) => api.get(`/download?name=${name}`);
-
+const uploadFile = (name, file) => {
+    api.post(`/upload?name=${name}`, {file:file}, {headers: {'content-type': 'application/json'}});
+    // Replicate file to all replicas
+    replicaManager.replicate(name, file);
+};
+const deleteFile = (name) => {
+    api.post(`/delete?name=${name}`);
+    // Delete file from all replicas
+    replicaManager.delete(name);
+};
+const downloadFile = (name) => {
+    let replica = replicaManager.getReplica();
+    // api.get(`/download?name=${name}`);
+    axios.get(`${replica}/download?name=${name}`).then(response => {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify(response.data));
+    }).catch(err => {
+        console.log('Error downloading file from replica: ' + replica);
+        res.status(500).send('Error downloading file from replica: ' + replica);
+    });
+};
 let replicaNodes = ['http://localhost:1111', 'http://localhost:1112', 'http://localhost:1113'];
 
 // Replica Manager Object to handle replication
@@ -158,29 +175,6 @@ app.get('/files', (req, res) => {
     })
     .catch((err) => console.log(err));
 });
-
-// // delete file from db and replicate to all replicas
-// app.delete('/delete', (req, res) => {
-//     console.log(`Forwarding ${req.method} ${req.path} request to mongodb..`);
-//     deleteFile(req.query.name)
-//     .then((response) => {
-//         replicaManager.replicate(req.query.name, null);
-//         res.json(response.data);
-//     })
-//     .catch((err) => console.log(err));
-// });
-
-
-// // add new file to db and replicate to all replicas
-// app.post('/upload', (req, res) => {
-//     console.log(`Forwarding ${req.method} ${req.path} request to mongodb..`);
-//     uploadFile(req.query.name, req.body.file)
-//     .then((response) => {
-//         replicaManager.replicate(req.query.name, req.body.file);
-//         res.json(response.data);
-//     })
-//     .catch((err) => console.log(err));
-// });
 
 // add new file to db
 app.post('/upload', (req, res) => {
