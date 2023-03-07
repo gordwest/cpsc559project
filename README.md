@@ -9,23 +9,24 @@ Client <-- Proxy <-- Server <--
 ![FileSystem](preview.jpg)
 
 # Setup / Run
-### Main Server
+### Main Server + Replicas (run in separate terminals)
 ```bash
-# get packages
+# get server packages
 cd server
 npm ci
 
-# run server
+# run main server
 node server
-```
 
-### Server Replica1
-``` bash
+# new terminal
+cd server
+# run replica server 1
+node server2
 ```
 
 ### Proxy
 ```bash
-# get packages
+# get proxy packages
 cd proxy
 npm ci
 
@@ -35,7 +36,7 @@ node proxy
 
 ### Client
 ```bash
-# get packages
+# get client packages
 cd client
 npm ci
 
@@ -45,16 +46,22 @@ npm start
 
 # HTTP Servers
 ### Proxy -> (http://localhost:2222)
-- Forwards HTTP requests between the clients and the servers
+- Randomly picks a server to forwards HTTP requests to
+- Relays HTTP responses back to client
 
-### Server -> (http://localhost:1111)
+### Main Server -> (http://localhost:1111)
 - Receives HTTP requests from the proxy
 - Interacts directly with MongoDB
+- Replicates requests to other server(s) "gossip"
+
+### Server Replica 1 -> (http://localhost:5555)
+- Receives HTTP requests from the proxy
+- Interacts directly with MongoDB
+- Replicates requests to other server(s) "gossip"
 
 # MongoDB Endpoints
 - Main MongoDB URL -> https://us-east-1.aws.data.mongodb-api.com/app/filesystem-lkvhv/endpoint
 - MongoDB Replica1 URL -> https://us-east-1.aws.data.mongodb-api.com/app/filesystemrep1-uzxxi/endpoint
-- MongoDB Replica2 URL -> ...
 
 ### GET /Files
 Returns all files in the database.  
