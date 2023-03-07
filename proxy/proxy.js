@@ -27,11 +27,6 @@ app.use((req, res, next) => {
     next();
 });
 
-// Only required in server.js
-// app.options('/upload', (req,res) => {
-//     res.status(204).send();
-// });
-
 // Start proxy server on port
 app.use('/', proxy);
 
