@@ -3,11 +3,11 @@ const bodyParser = require('body-parser');
 const axios = require('axios');
 const app = express();
 
-const PORT = 1111;
+const PORT = 5555;
 app.use(bodyParser.json());
 
 const api = axios.create({
-    baseURL: "https://us-east-1.aws.data.mongodb-api.com/app/filesystem-lkvhv/endpoint" // address to mongodb
+    baseURL: "https://us-east-1.aws.data.mongodb-api.com/app/filesystemrep1-uzxxi/endpoint" // address to mongodb
 });
 
 const uploadFile = (name, file) => api.post(`/upload?name=${name}`, {file:file}, {headers: {'content-type': 'application/json'}});
