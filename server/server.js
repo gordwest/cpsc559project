@@ -32,7 +32,7 @@ servers.forEach((server) => {
     if (server.address !== `http://localhost:${PORT}`) { // skip current server
     axios({
         method,
-        url: `${server.address}${path}`,
+        url: `${server.address}${path}?name=${data.name}`,
         data
     })
     .then((response) => {
@@ -67,7 +67,9 @@ app.post('/upload', (req, res) => {
     uploadFile(req.query.name, req.body.file)
     .then((response) => {
       res.json(response.data);
-      replicateToServers('post', '/upload', { name: req.query.name, file: req.body.file });
+      if (req.body.flag != 'replica') {
+        replicateToServers('POST', '/upload', { name: req.query.name, file: req.body.file, flag: "replica" });
+      }
     })
     .catch((err) => {
       console.log(err);
