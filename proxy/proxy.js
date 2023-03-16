@@ -5,18 +5,42 @@ const PORT = 2222;
 const servers = ['http://localhost:1111', 'http://localhost:5555'];
 
 // Proxy middleware
-const { createProxyMiddleware } = require('http-proxy-middleware');
-const target = 'http://localhost:1111'; // target host (Server URL)
+// const { createProxyMiddleware } = require('http-proxy-middleware');
 
-// foward request to all replicas 
-const proxy = createProxyMiddleware({
-  target: servers,
-  changeOrigin: true,
-  xfwd: true, // add x-forwarded headers (forwards all headers from client to servers)
-  onProxyReq: function onProxyReq(proxyReq, req, res) {
-  console.log(`Forwarding ${req.method} ${req.path} requests to all servers..`);
-},
-});
+// Load balancer
+const httpProxy = require('http-proxy');
+const proxy = httpProxy.createProxyServer({});
+
+const loadBalancer = (req, res) => {
+  // Use a load balancing algorithm to choose the next server
+  const server = servers.shift();
+  servers.push(server);
+
+  // Forward the request to the chosen server
+  proxy.web(req, res, { target: server });
+};
+
+// active replication - forward requests to all servers
+// create an instance of the middleware for each host URL
+
+// // Create an array of proxies, one for each server
+// const proxies = servers.map((server) => {
+//   return createProxyMiddleware({
+//     target: server,
+//     changeOrigin: true
+//   });
+// });
+
+// // Load balancer - use the first proxy for all requests
+// const loadBalancer = (req, res, next) => {
+//   proxies[0](req, res, next);
+// };
+
+
+// // this will combine all the proxies into a single middleware function that will forward requests to all servers
+// const proxy = (req, res, next) => {
+//   proxies.forEach((p) => p(req, res, next));
+// };
 
 // allow cross-origin requests
 app.use((req, res, next) => {
@@ -27,7 +51,7 @@ app.use((req, res, next) => {
 });
 
 // Start proxy server on port
-app.use('/', proxy);
+app.use('/', loadBalancer);
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
