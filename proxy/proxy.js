@@ -11,13 +11,11 @@ const servers = ['http://localhost:1111', 'http://localhost:5555'];
 const httpProxy = require('http-proxy');
 const proxy = httpProxy.createProxyServer({});
 
-const loadBalancer = (req, res) => {
-  // Use a load balancing algorithm to choose the next server
-  const server = servers.shift();
-  servers.push(server);
-
-  // Forward the request to the chosen server
-  proxy.web(req, res, { target: server });
+const proxies = (req, res) => {
+  // Forward the request to all replicas
+  for (const server of servers) {
+    proxy.web(req, res, { target: server });
+  }
 };
 
 // active replication - forward requests to all servers
@@ -51,7 +49,7 @@ app.use((req, res, next) => {
 });
 
 // Start proxy server on port
-app.use('/', loadBalancer);
+app.use('/', proxies);
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
