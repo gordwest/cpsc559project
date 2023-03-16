@@ -3,27 +3,18 @@ const app = express();
 const PORT = 2222;
 
 const servers = ['http://localhost:1111', 'http://localhost:5555'];
-var server_idx = 0;
 
 // Proxy middleware
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const target = 'http://localhost:1111'; // target host (Server URL)
-const proxy = createProxyMiddleware({
-  target,
-  changeOrigin: true,
-  router: function () {
-    if (server_idx != 0) {
-        server_idx = 0
-    }
-    else {
-        server_idx = 1
-    }
-    return servers[server_idx]
-    // server_picked = servers[Math.round(Math.random())]
-  },
 
+// foward request to all replicas 
+const proxy = createProxyMiddleware({
+  target: servers,
+  changeOrigin: true,
+  xfwd: true, // add x-forwarded headers (forwards all headers from client to servers)
   onProxyReq: function onProxyReq(proxyReq, req, res) {
-    console.log(`Forwarding ${req.method} ${req.path} ${servers[server_idx]} request to server..`);
+  console.log(`Forwarding ${req.method} ${req.path} requests to all servers..`);
 },
 });
 
