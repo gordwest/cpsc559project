@@ -4,17 +4,13 @@ const PORT = 2222;
 
 const servers = ['http://localhost:1111', 'http://localhost:5555'];
 
-// Proxy middleware
-// const { createProxyMiddleware } = require('http-proxy-middleware');
-
-// Load balancer
+// use http-proxy to forward requests to other servers
 const httpProxy = require('http-proxy');
 const proxy = httpProxy.createProxyServer();
 
-
 const replicateToServers = (req, res) => {
-  const requests = servers.map((server) => {
-    return new Promise((resolve) => {
+  const requests = servers.map((server) => { // map each server to a promise
+    return new Promise((resolve) => { // create a promise for each server
       proxy.web(req, res, { target: server }, () => {
         resolve(server);
       });
@@ -33,7 +29,6 @@ const replicateToServers = (req, res) => {
       res.status(500).send('Failed to forward request');
     });
 };
-
 
 // allow cross-origin requests
 app.use((req, res, next) => {
