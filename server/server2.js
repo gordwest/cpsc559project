@@ -19,23 +19,23 @@ const servers = [
     { id: 2, address: 'http://localhost:5555' },
   ];
 
-const replicateToServers = (method, path, data) => {
-servers.forEach((server) => {
-    if (server.address !== `http://localhost:${PORT}`) { // skip current server
-    axios({
-        method,
-        url: `${server.address}${path}?name=${data.name}`,
-        data
-    })
-    .then((response) => {
-        console.log(`Replicated ${method} ${path} to server ${server.id}`);
-    })
-    .catch((err) => {
-        console.log(`Error replicating ${method} ${path} to server ${server.id}:`, err);
-    });
-    }
-});
-};
+// const replicateToServers = (method, path, data) => {
+// servers.forEach((server) => {
+//     if (server.address !== `http://localhost:${PORT}`) { // skip current server
+//     axios({
+//         method,
+//         url: `${server.address}${path}?name=${data.name}`,
+//         data
+//     })
+//     .then((response) => {
+//         console.log(`Replicated ${method} ${path} to server ${server.id}`);
+//     })
+//     .catch((err) => {
+//         console.log(`Error replicating ${method} ${path} to server ${server.id}:`, err);
+//     });
+//     }
+// });
+// };
   
 // retreive all files from db
 app.get('/files', (req, res) => {
@@ -57,9 +57,9 @@ app.post('/upload', (req, res) => {
     uploadFile(req.query.name, req.body.file)
     .then((response) => {
       res.json(response.data);
-      if (req.body.flag != 'replica') {
-        replicateToServers('POST', '/upload', { name: req.query.name, file: req.body.file, flag: "replica" });
-      }
+      // if (req.body.flag != 'replica') {
+      //   replicateToServers('POST', '/upload', { name: req.query.name, file: req.body.file, flag: "replica" });
+      // }
     })
     .catch((err) => {
       console.log(err);
@@ -85,9 +85,9 @@ app.post('/delete', (req, res) => {
     deleteFile(req.query.name)
     .then((response) => {
       res.json(response.data);
-      if (req.body.flag != 'replica') {
-        replicateToServers('POST', '/delete', { name: req.query.name, flag: 'replica' });
-      }
+      // if (req.body.flag != 'replica') {
+      //   replicateToServers('POST', '/delete', { name: req.query.name, flag: 'replica' });
+      // }
     })
     .catch((err) => {
       console.log(err);

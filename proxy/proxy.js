@@ -9,36 +9,31 @@ const servers = ['http://localhost:1111', 'http://localhost:5555'];
 
 // Load balancer
 const httpProxy = require('http-proxy');
-const proxy = httpProxy.createProxyServer({});
+const proxy = httpProxy.createProxyServer();
 
-const proxies = (req, res) => {
-  // Forward the request to all replicas
-  for (const server of servers) {
-    proxy.web(req, res, { target: server });
-  }
+
+const replicateToServers = (req, res) => {
+  const requests = servers.map((server) => {
+    return new Promise((resolve) => {
+      proxy.web(req, res, { target: server }, () => {
+        resolve(server);
+      });
+    });
+  });
+
+  // promise race allows us to send the resposne of the first successful request 
+  // back to the proxy as soon as it is available without waiting for all requests to complete
+  // will reduce latency and improve performance vs promise.all (which will wait for all requests to complete)
+  Promise.race(requests)
+    .then((server) => {
+      console.log(`Forwarded request to server: ${server}`);
+    })
+    .catch((error) => {
+      console.error(`Failed to forward request: ${error}`);
+      res.status(500).send('Failed to forward request');
+    });
 };
 
-// active replication - forward requests to all servers
-// create an instance of the middleware for each host URL
-
-// // Create an array of proxies, one for each server
-// const proxies = servers.map((server) => {
-//   return createProxyMiddleware({
-//     target: server,
-//     changeOrigin: true
-//   });
-// });
-
-// // Load balancer - use the first proxy for all requests
-// const loadBalancer = (req, res, next) => {
-//   proxies[0](req, res, next);
-// };
-
-
-// // this will combine all the proxies into a single middleware function that will forward requests to all servers
-// const proxy = (req, res, next) => {
-//   proxies.forEach((p) => p(req, res, next));
-// };
 
 // allow cross-origin requests
 app.use((req, res, next) => {
@@ -49,7 +44,7 @@ app.use((req, res, next) => {
 });
 
 // Start proxy server on port
-app.use('/', proxies);
+app.use('/', replicateToServers);
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
