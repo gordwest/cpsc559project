@@ -14,7 +14,6 @@ const replicateToServers = (req, res) => {
       proxy.web(req, res, { target: server }, () => {
         resolve(server);
       });
-      // proxy.web(req, res, { target: 'http://localhost:1111' });
     });
   });
 
