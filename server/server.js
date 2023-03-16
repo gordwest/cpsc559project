@@ -15,9 +15,10 @@ const deleteFile = (name) => api.post(`/delete?name=${name}`);
 const downloadFile = (name) => api.get(`/download?name=${name}`);
 
 const servers = [
-    { id: 1, address: 'http://localhost:1111' },
-    { id: 2, address: 'http://localhost:5555' },
-  ];
+  { id: 1, address: 'http://localhost:1111' },
+  { id: 2, address: 'http://localhost:5555' },
+  { id: 3, address: 'http://localhost:7777' },
+];
 
 const replicateToServers = (method, path, data) => {
 servers.forEach((server) => {
@@ -57,9 +58,9 @@ app.post('/upload', (req, res) => {
     uploadFile(req.query.name, req.body.file)
     .then((response) => {
       res.json(response.data);
-      if (req.body.flag != 'replica') {
-        replicateToServers('POST', '/upload', { name: req.query.name, file: req.body.file, flag: "replica" });
-      }
+      // if (req.body.flag != 'replica') {
+      //   replicateToServers('POST', '/upload', { name: req.query.name, file: req.body.file, flag: "replica" });
+      // }
     })
     .catch((err) => {
       console.log(err);
@@ -84,9 +85,9 @@ app.post('/delete', (req, res) => {
     deleteFile(req.query.name)
     .then((response) => {
       res.json(response.data);
-      if (req.body.flag != 'replica') {
-        replicateToServers('POST', '/delete', { name: req.query.name, flag: 'replica' });
-      }
+      // if (req.body.flag != 'replica') {
+      //   replicateToServers('POST', '/delete', { name: req.query.name, flag: 'replica' });
+      // }
     })
     .catch((err) => {
       console.log(err);

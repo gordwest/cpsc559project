@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const PORT = 2222;
 
-const servers = ['http://localhost:1111', 'http://localhost:5555'];
+const servers = ['http://localhost:1111', 'http://localhost:5555', 'http://localhost:7777'];
 
 // use http-proxy to forward requests to other servers
 const httpProxy = require('http-proxy');
@@ -14,6 +14,7 @@ const replicateToServers = (req, res) => {
       proxy.web(req, res, { target: server }, () => {
         resolve(server);
       });
+      // proxy.web(req, res, { target: 'http://localhost:1111' });
     });
   });
 

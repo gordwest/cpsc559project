@@ -3,11 +3,11 @@ const bodyParser = require('body-parser');
 const axios = require('axios');
 const app = express();
 
-const PORT = 5555;
+const PORT = 7777;
 app.use(bodyParser.json());
 
 const api = axios.create({
-    baseURL: "https://us-east-1.aws.data.mongodb-api.com/app/filesystemrep1-uzxxi/endpoint" // address to mongodb
+    baseURL: "https://us-east-1.aws.data.mongodb-api.com/app/filesystemrep2-tyemh/endpoint/" // address to mongodb
 });
 
 const uploadFile = (name, file) => api.post(`/upload?name=${name}`, {file:file}, {headers: {'content-type': 'application/json'}});
@@ -15,10 +15,10 @@ const deleteFile = (name) => api.post(`/delete?name=${name}`);
 const downloadFile = (name) => api.get(`/download?name=${name}`);
 
 const servers = [
-  { id: 1, address: 'http://localhost:1111' },
-  { id: 2, address: 'http://localhost:5555' },
-  { id: 3, address: 'http://localhost:7777' },
-];
+    { id: 1, address: 'http://localhost:1111' },
+    { id: 2, address: 'http://localhost:5555' },
+    { id: 3, address: 'http://localhost:7777' },
+  ];
 
 const replicateToServers = (method, path, data) => {
 servers.forEach((server) => {
