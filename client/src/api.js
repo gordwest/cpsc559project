@@ -2,10 +2,26 @@
 
 import axios from 'axios';
 
+// const api = axios.create({
+//     baseURL: 'http://localhost:2222' // target server (Proxy URL)
+// });
+
+const primaryBaseUrl = 'http://localhost:2222';
+const backupBaseUrl = 'http://localhost:3333';
+
 const api = axios.create({
-    baseURL: 'http://localhost:2222' // target server (Proxy URL)
-    // baseURL: 'https://us-east-1.aws.data.mongodb-api.com/app/filesystem-lkvhv/endpoint' // target server (Proxy URL)
+  baseURL: primaryBaseUrl, // use primary proxy by default
 });
+
+// switch to backup proxy if primary proxy fails
+api.interceptors.response.use(
+  response => response,
+  error => {
+    api.defaults.baseURL = backupBaseUrl;
+    console.log('Switched to backup baseURL:', api.defaults.baseURL);
+    return Promise.reject(error);
+  }
+);
 
 export const retreiveFiles = () => {
     console.log('Retrieving files');
