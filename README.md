@@ -45,19 +45,18 @@ npm start
 ```
 
 # HTTP Servers
-### Proxy -> (http://localhost:2222)
+### Main Proxy -> (http://localhost:1111)
 - Randomly picks a server to forwards HTTP requests to
 - Relays HTTP responses back to client
+### Backup Proxy -> (http://localhost:2222)
 
-### Main Server -> (http://localhost:1111)
+### Main Server -> (http://localhost:3333)
 - Receives HTTP requests from the proxy
 - Interacts directly with MongoDB
 - Replicates requests to other server(s) "gossip"
 
 ### Server Replica 1 -> (http://localhost:5555)
-- Receives HTTP requests from the proxy
-- Interacts directly with MongoDB
-- Replicates requests to other server(s) "gossip"
+### Server Replica 2 -> (http://localhost:7777)
 
 # MongoDB Endpoints
 - Main MongoDB URL -> https://us-east-1.aws.data.mongodb-api.com/app/filesystem-lkvhv/endpoint

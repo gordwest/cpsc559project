@@ -15,7 +15,7 @@ const deleteFile = (name) => api.post(`/delete?name=${name}`);
 const downloadFile = (name) => api.get(`/download?name=${name}`);
 
 const servers = [
-    { id: 1, address: 'http://localhost:1111' },
+    { id: 1, address: 'http://localhost:3333' },
     { id: 2, address: 'http://localhost:5555' },
     { id: 3, address: 'http://localhost:7777' },
 ];
