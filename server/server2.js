@@ -15,11 +15,27 @@ const deleteFile = (name) => api.post(`/delete?name=${name}`);
 const downloadFile = (name) => api.get(`/download?name=${name}`);
 
 const servers = [
-  { id: 1, address: 'http://localhost:3333' },
-  { id: 2, address: 'http://localhost:5555' },
-  { id: 3, address: 'http://localhost:7777' },
+    { id: 1, address: 'http://localhost:3333' },
+    { id: 3, address: 'http://localhost:7777' },
+    //   { id: 2, address: 'http://localhost:5555' },
 ];
-  
+
+const replicateToServers = (method, path, data) => {
+    servers.forEach((server) => {
+        axios({
+            method,
+            url: `${server.address}${path}?name=${data.name}`,
+            data
+        })
+        .then((response) => {
+            console.log(`Replicated ${method} ${path} to server ${server.id}`);
+        })
+        .catch((err) => {
+            console.log(`Error replicating ${method} ${path} to server ${server.id}:`, err);
+        });
+    });
+};
+
 // retreive all files from db
 app.get('/files', (req, res) => {
     console.log(`Forwarding ${req.method} ${req.path} request to mongodb..`);
@@ -38,13 +54,17 @@ app.post('/upload', (req, res) => {
     console.log(`Forwarding ${req.method} ${req.path} request to mongodb..`);
     uploadFile(req.query.name, req.body.file)
     .then((response) => {
-      res.json(response.data);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({ error: err.message });
-    });
-  });
+        res.json(response.data);
+        // forward request to other replica servers
+        if (req.body.flag != 'replica') {
+            replicateToServers('POST', '/upload', { name: req.query.name, flag: 'replica' });
+        }
+        })
+        .catch((err) => {
+        console.log(err);
+        res.status(500).json({ error: err.message });
+        });
+});
 
 app.get('/download', (req, res) => {
   console.log(`Forwarding ${req.method} ${req.path} request to mongodb..`);
@@ -58,16 +78,19 @@ app.get('/download', (req, res) => {
   });
 });
 
-
 app.post('/delete', (req, res) => {
     console.log(`Forwarding ${req.method} ${req.path} request to mongodb..`);
     deleteFile(req.query.name)
     .then((response) => {
-      res.json(response.data);
+    res.json(response.data);
+        // forward request to other replica servers
+        if (req.body.flag != 'replica') {
+            replicateToServers('POST', '/delete', { name: req.query.name, flag: 'replica' });
+        }
     })
     .catch((err) => {
-      console.log(err);
-      res.status(500).json({ error: err.message });
+        console.log(err);
+        res.status(500).json({ error: err.message });
     });
 });
 
