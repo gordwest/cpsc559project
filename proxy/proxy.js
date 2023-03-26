@@ -3,7 +3,7 @@ const express = require('express');
 const app = express();
 const PORT = 1111;
 // const PORT = 25564;
-const doomsdays = 30; // number of requests before brick
+const doomsdays = 39; // number of requests before brick
 let req_count = 0;
 
 function freeze() {
