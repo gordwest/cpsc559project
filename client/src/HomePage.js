@@ -9,12 +9,12 @@ function Home() {
 
     const [files, setFiles] = useState([]);
 
-    useEffect(() => {
-        const intervalId = setInterval(() => {
-            refreshFiles()
-        }, 5000);
-        return () => clearInterval(intervalId);
-    }, []);
+    // useEffect(() => {
+    //     const intervalId = setInterval(() => {
+    //         refreshFiles()
+    //     }, 5000);
+    //     return () => clearInterval(intervalId);
+    // }, []);
     
     async function refreshFiles() {
         try {
@@ -29,6 +29,7 @@ function Home() {
     <div>
         <NavBar/>
         <Container className="mt-5 mb-5">
+            <button onClick={async () => {await refreshFiles();} }>Refresh</button>
             <div className="file_upload_bar">
                 <FileUpload/>
             </div>
