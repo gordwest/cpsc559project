@@ -3,6 +3,7 @@ import NavBar from "./components/NavBar";
 import File from "./components/File";
 import FileUpload from "./components/FileUpload";
 import { retreiveFiles } from "./api";
+import "./HomePage.css";
 import Container from 'react-bootstrap/Container';
 
 function Home() {
@@ -29,7 +30,7 @@ function Home() {
     <div>
         <NavBar/>
         <Container className="mt-5 mb-5">
-            <button onClick={async () => {await refreshFiles();} }>Refresh</button>
+            <button className="file-reload-button" onClick={async () => {await refreshFiles();} }>Refresh</button>
             <div className="file_upload_bar">
                 <FileUpload/>
             </div>
