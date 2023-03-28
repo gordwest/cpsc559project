@@ -50,7 +50,7 @@ const roundRobinServers = (req, res) => {
         res.status(500).send('Failed to forward request');
     });
     // go to next server in round robin
-    if (server_idx == 2) server_idx = 0
+    if (server_idx === server.length) server_idx = 0
     else server_idx++;
 
     // brick server
