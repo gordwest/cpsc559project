@@ -38,20 +38,40 @@ const roundRobinServers = (req, res) => {
     });
     console.log(''); // newline for readability
 
-    Promise.all([serverPromise])
-    .then((server) => {
-        console.log(`Forwarding request to ${server}`);
-    })
-    .catch((error) => {
-        console.log(`Server ${error} crashed..`);
-        const index = servers.indexOf(error);
-        servers.splice(index, 1);
-        console.log(`Active server list: [${servers}]\n`)
-        res.status(500).send('Failed to forward request');
-    });
-    // go to next server in round robin
-    if (server_idx === server.length) server_idx = 0
-    else server_idx++;
+    serverPromise
+        .then((server) => {
+            console.log(`Forwarding request to ${server}`);
+        })
+        .catch((error) => {
+            console.log(`Server ${error} crashed..`);
+            const index = servers.indexOf(error);
+            servers.splice(index, 1);
+            console.log(`Active server list: [${servers}]\n`)
+            // res.status(500).send('Failed to forward request');
+
+            // make new request to different server replica???
+            // replace failure with new successful response from other replica
+            let server_redo = servers[0]
+            const serverPromise_redo = new Promise((resolve, reject) => {
+                console.log(`Forwarding ${req.method} ${req.path} request to ${server_redo}`)
+                proxy.web(req, res, { target: server_redo }, () => {
+                    // resolve(server_redo);
+                    reject(server_redo);
+                });
+            });
+
+            serverPromise_redo
+                .then((server_redo) => {
+                    console.log(`Forwarding request to ${server_redo}`);
+                })
+                .catch((error) => {
+                    console.log(`failed..`);
+                })
+
+        });
+        // go to next server in round robin
+        if (server_idx == servers.length) server_idx = 0
+        else server_idx++;
 
     // brick server
     // briiiick(req_count++) // UNCOMMENT TO ACTIVATE DOOMSDAY CLOCK
