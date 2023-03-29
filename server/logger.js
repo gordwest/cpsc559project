@@ -7,7 +7,7 @@ const logFileName = (id) => `logs_${id}.txt`;
 
 // write a log message to the log file
 const writeLog = (id, method, fileName) => {
-    const entry = `${new Date().toISOString()} - $ {action} - ${fileName}\n`;
+    const entry = `${new Date().toISOString()} - ${method} - ${fileName}\n`;
     fs.appendFile(path.join(__dirname, logFileName(id)), entry, (err) => {
         if (err) {
             console.log(`Error writing to log file:`, err);

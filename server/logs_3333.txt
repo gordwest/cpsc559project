@@ -1,12 +1,7 @@
-2023-03-29T04:32:32.120Z - $ {action} - cat1.jpg
-2023-03-29T04:33:28.685Z - $ {action} - cat1.jpg
-2023-03-29T04:33:46.975Z - $ {action} - cat1.jpg
-2023-03-29T04:36:04.693Z - $ {action} - datavase purple.png
-2023-03-29T04:36:14.590Z - $ {action} - datavase purple.png
-2023-03-29T04:36:48.947Z - $ {action} - datavase orange.png
-2023-03-29T04:36:59.438Z - $ {action} - 559_prac_file22.txt
-2023-03-29T04:37:00.972Z - $ {action} - test1.txt
-2023-03-29T04:37:06.691Z - $ {action} - test1.txt
-2023-03-29T04:37:11.916Z - $ {action} - 559_prac_file22.txt
-2023-03-29T04:37:45.464Z - $ {action} - undefined
-2023-03-29T04:37:49.181Z - $ {action} - undefined
+2023-03-29T04:46:20.423Z - UPLOAD - datavase orange.png
+2023-03-29T04:46:39.129Z - DELETE - datavase orange.png
+2023-03-29T04:46:51.048Z - UPLOAD - datavase orange.png
+2023-03-29T04:47:06.955Z - DELETE - datavase orange.png
+2023-03-29T04:47:09.577Z - DELETE - datavase orange.png
+2023-03-29T04:48:49.800Z - DELETE - datavase orange.png
+2023-03-29T04:48:56.362Z - DELETE - datavase orange.png
