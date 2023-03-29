@@ -12,32 +12,48 @@ const httpProxy = require('http-proxy');
 const proxy = httpProxy.createProxyServer();
 
 const roundRobinServers = (req, res) => {
-    // pick a server
+    // get server addr
     const server = servers[server_idx];
 
     const serverPromise = new Promise((resolve, reject) => {
         console.log(`Forwarding ${req.method} ${req.path} request to ${server}`)
         proxy.web(req, res, { target: server }, () => {
-            // resolve(server);
             reject(server);
         });
     });
     console.log(''); // newline for readability
 
-    Promise.all([serverPromise])
-    .then((server) => {
-        console.log(`Forwarding request to ${server}`);
-    })
-    .catch((error) => {
-        console.log(`Server ${error} crashed..`);
-        const index = servers.indexOf(error);
-        servers.splice(index, 1);
-        console.log(`Active server list: [${servers}]\n`)
-        res.status(500).send('Failed to forward request');
-    });
-    // go to next server in round robin
-    if (server_idx >= servers.length-1) server_idx = 0
-    else server_idx++;
+    serverPromise
+        .then((server) => {
+            console.log(`Forwarding request to ${server}`);
+        })
+        .catch((error) => {
+            console.log(`Server ${error} crashed..`);
+            const index = servers.indexOf(error);
+            servers.splice(index, 1);
+            console.log(`Active server list: [${servers}]\n`)
+            server_idx = 0 // reset index
+
+            // replace failure with new successful response from other replica
+            let server_redo = servers[0]
+            const serverPromise_redo = new Promise((resolve, reject) => {
+                console.log(`Redirecting ${req.method} ${req.path} request to ${server_redo}\n`)
+                proxy.web(req, res, { target: server_redo }, () => {
+                    reject(server_redo);
+                });
+            });
+            serverPromise_redo
+                .then((server_redo) => {
+                    res.send(res); // reply back to client with redirected response
+                })
+                .catch((error) => {
+                    console.log(`failed..`);
+                })
+
+        });
+        // go to next server in round robin fashion
+        if (server_idx >= servers.length-1) server_idx = 0
+        else server_idx++;
 }
 
 // allow cross-origin requests
