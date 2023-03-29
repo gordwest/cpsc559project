@@ -29,8 +29,13 @@ const bodyParser = require('body-parser');
 
 // add server to active server list
 function addServer(server) {
-    servers.push(server);
-    console.log(`Server ${server} added to active server list: [${servers}]\n`);
+    // check if server already exists in active server list
+    if (!servers.includes(server)){
+        servers.push(server);
+        console.log(`Server ${server} added to active server list: [${servers}]\n`);
+    } else {
+        console.log(`Server ${server} already exists in active server list!`);
+    }
 }
 
 // endpoint to add server to active server list
