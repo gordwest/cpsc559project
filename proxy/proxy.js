@@ -25,6 +25,20 @@ let servers = ['http://localhost:3333', 'http://localhost:5555', 'http://localho
 const httpProxy = require('http-proxy');
 const proxy = httpProxy.createProxyServer();
 
+const bodyParser = require('body-parser');
+// app.use(bodyParser.json());
+
+function addServer(server) {
+    servers.push(server);
+    console.log(`Server ${server} added to active server list: [${servers}]\n`);
+}
+
+app.post(`/online`, bodyParser.json(), (req, res) => {
+    const server = req.body.server;
+    addServer(server);
+    res.send(`Server ${server} added to active server list: [${servers}]\n`);
+});
+
 const roundRobinServers = (req, res) => {
     // get server addr
     const server = servers[server_idx];

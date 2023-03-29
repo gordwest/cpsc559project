@@ -41,12 +41,27 @@ function fastForward() {
         .catch((err) => {
             console.log(err);
         });
+
+    // after recovery, notify proxy that this server is back online
+    axios.post(`http://localhost:1111/online`, {server: `http://localhost:${PORT}`})
+        .then ((response) => {
+            console.log(`Notified proxy that server ${PORT} is back online..`);
+        })
+        .catch((err) => {
+            console.log(`Error notifying proxy that server ${PORT} is back online:`, err);
+        });
 }
 
 // server starting in 'restart' mode -> fast forward to state of another active replica
 if (process.argv[2] == '-recover') {
     fastForward()
 }
+
+// endpoint to let the proxy know that this server is back online after a crash
+app.post('/online', (req, res) => {
+    console.log(`Server ${PORT} is back online..`);
+    res.status(200).send(`Server ${PORT} is back online..`);
+});
 
 const replicateToServers = (method, path, data) => {
     servers.forEach((server) => {
