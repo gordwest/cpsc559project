@@ -26,13 +26,14 @@ const httpProxy = require('http-proxy');
 const proxy = httpProxy.createProxyServer();
 
 const bodyParser = require('body-parser');
-// app.use(bodyParser.json());
 
+// add server to active server list
 function addServer(server) {
     servers.push(server);
     console.log(`Server ${server} added to active server list: [${servers}]\n`);
 }
 
+// endpoint to add server to active server list
 app.post(`/online`, bodyParser.json(), (req, res) => {
     const server = req.body.server;
     addServer(server);
