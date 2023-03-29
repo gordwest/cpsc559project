@@ -26,13 +26,12 @@ const httpProxy = require('http-proxy');
 const proxy = httpProxy.createProxyServer();
 
 const roundRobinServers = (req, res) => {
-    // pick a server
+    // get server addr
     const server = servers[server_idx];
 
     const serverPromise = new Promise((resolve, reject) => {
         console.log(`Forwarding ${req.method} ${req.path} request to ${server}`)
         proxy.web(req, res, { target: server }, () => {
-            // resolve(server);
             reject(server);
         });
     });
@@ -47,30 +46,27 @@ const roundRobinServers = (req, res) => {
             const index = servers.indexOf(error);
             servers.splice(index, 1);
             console.log(`Active server list: [${servers}]\n`)
-            // res.status(500).send('Failed to forward request');
+            server_idx = 0 // reset index
 
-            // make new request to different server replica???
             // replace failure with new successful response from other replica
             let server_redo = servers[0]
             const serverPromise_redo = new Promise((resolve, reject) => {
-                console.log(`Forwarding ${req.method} ${req.path} request to ${server_redo}`)
+                console.log(`Redirecting ${req.method} ${req.path} request to ${server_redo}\n`)
                 proxy.web(req, res, { target: server_redo }, () => {
-                    // resolve(server_redo);
                     reject(server_redo);
                 });
             });
-
             serverPromise_redo
                 .then((server_redo) => {
-                    console.log(`Forwarding request to ${server_redo}`);
+                    res.send(res); // reply back to client with redirected response
                 })
                 .catch((error) => {
                     console.log(`failed..`);
                 })
 
         });
-        // go to next server in round robin
-        if (server_idx == servers.length) server_idx = 0
+        // go to next server in round robin fashion
+        if (server_idx >= servers.length-1) server_idx = 0
         else server_idx++;
 
     // brick server
