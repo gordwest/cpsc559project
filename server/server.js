@@ -10,10 +10,6 @@ const api = axios.create({
     baseURL: "https://us-east-1.aws.data.mongodb-api.com/app/filesystem-lkvhv/endpoint" // address to mongodb
 });
 
-const server2 = axios.create({
-    baseURL: "http://localhost:5555" // address to server 2
-});
-
 const uploadFile = (name, file) => api.post(`/upload?name=${name}`, {file:file}, {headers: {'content-type': 'application/json'}});
 const deleteFile = (name) => api.post(`/delete?name=${name}`);
 const downloadFile = (name) => api.get(`/download?name=${name}`);
@@ -30,8 +26,9 @@ function fastForward() {
     console.log("Recovering Crashed Server..")
     // clear local db
     api.post(`/brick`);
-    // query /files of an active server
-    server2.get(`/files`)
+    // query /files of an active server (dynamically pick an active server to query via randomization)
+    const activeReplica = servers[Math.floor(Math.random() * servers.length)].address;
+    axios.get(`${activeReplica}/files`)
         .then((response) => {
             // populate local db with files from active server 
             response.data.files.forEach((f) => {
@@ -44,7 +41,7 @@ function fastForward() {
 
     // after recovery, notify proxy that this server is back online
     axios.post(`http://localhost:1111/online`, {server: `http://localhost:${PORT}`})
-        .then ((response) => {
+        .then((response) => {
             console.log(`Notified proxy that server ${PORT} is back online..`);
         })
         .catch((err) => {
@@ -61,6 +58,17 @@ if (process.argv[2] == '-recover') {
 app.post('/online', (req, res) => {
     console.log(`Server ${PORT} is back online..`);
     res.status(200).send(`Server ${PORT} is back online..`);
+});
+
+// update this server's list of active replica servers
+app.post('/update-lists', bodyParser.json(), (req, res) => {
+    const updateLists = req.body.servers;
+    servers.length = 0; // clear array
+    updateLists.forEach((s) => {
+        servers.push({ id: s.id, address: s.address });
+    });
+    console.log(`Server list updated`);
+    // res.status(200).send({ message: 'Server list updated' });
 });
 
 const replicateToServers = (method, path, data) => {

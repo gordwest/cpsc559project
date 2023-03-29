@@ -24,18 +24,41 @@ let servers = ['http://localhost:3333', 'http://localhost:5555', 'http://localho
 // use http-proxy to forward requests to other servers
 const httpProxy = require('http-proxy');
 const proxy = httpProxy.createProxyServer();
-
+const axios = require('axios');
 const bodyParser = require('body-parser');
 
-// add server to active server list
+// add recovered serer back to active server list
 function addServer(server) {
     // check if server already exists in active server list
     if (!servers.includes(server)){
         servers.push(server);
         console.log(`Server ${server} added to active server list: [${servers}]\n`);
+        // filter out the offline servers
+        const activeServers = servers.filter((s) => s !== server);
+        // active server list becomes out of date after a server crash, update recovered server with current active server list
+        axios.post(`${server}/update-lists`, { servers: activeServers.map((s) => ({ id: servers.indexOf(s) + 1, address: s })) })
+            .then((response) => {
+                console.log(`Updating server ${server} list current active server list...\n`);
+            })
+            .catch((error) => {
+                console.log(`Error updating recovered server ${server} with current active server list...\n`);
+            });
     } else {
-        console.log(`Server ${server} already exists in active server list!`);
+        console.log(`Server ${server} already exists in active server list!\n`);
     }
+}
+
+// notify other servers of updated server list
+function notifyServers(activeServers) {
+    activeServers.forEach(server => {
+        axios.post(`${server}/update-lists`, {servers: activeServers})
+        .then((res) => {
+            console.log(`Notifying ${server} of updated server list...\n`);
+        })
+        .catch((err) => {
+            console.log(`Error notifying ${server} of updated server list...\n`);
+        });
+    });
 }
 
 // endpoint to add server to active server list
@@ -67,6 +90,9 @@ const roundRobinServers = (req, res) => {
             servers.splice(index, 1);
             console.log(`Active server list: [${servers}]\n`)
             server_idx = 0 // reset index
+
+            // notify other servers of updated server list
+            notifyServers(servers);
 
             // replace failure with new successful response from other replica
             let server_redo = servers[0]

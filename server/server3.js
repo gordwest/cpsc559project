@@ -13,12 +13,64 @@ const api = axios.create({
 const uploadFile = (name, file) => api.post(`/upload?name=${name}`, {file:file}, {headers: {'content-type': 'application/json'}});
 const deleteFile = (name) => api.post(`/delete?name=${name}`);
 const downloadFile = (name) => api.get(`/download?name=${name}`);
+const clearDB = () => api.post(`/brick`);
 
 const servers = [
     { id: 1, address: 'http://localhost:3333' },
     { id: 2, address: 'http://localhost:5555' },
     // { id: 3, address: 'http://localhost:7777' },
 ];
+
+// used to catch up a crashed server
+function fastForward() {
+    console.log("Recovering Crashed Server..")
+    // clear local db
+    api.post(`/brick`);
+    // query /files of an active server (dynamically pick an active server to query via randomization)
+    console.log(`servers: ${servers}`);
+    const activeReplica = servers[Math.floor(Math.random() * servers.length)].address;
+    axios.get(`${activeReplica}/files`)
+        .then((response) => {
+            // populate local db with files from active server 
+            response.data.files.forEach((f) => {
+                uploadFile(f.name, f.file)
+            })
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+
+    // after recovery, notify proxy that this server is back online
+    axios.post(`http://localhost:1111/online`, {server: `http://localhost:${PORT}`})
+        .then((response) => {
+            console.log(`Notified proxy that server ${PORT} is back online..`);
+        })
+        .catch((err) => {
+            console.log(`Error notifying proxy that server ${PORT} is back online:`, err);
+        });
+}
+
+// server starting in 'restart' mode -> fast forward to state of another active replica
+if (process.argv[2] == '-recover') {
+    fastForward()
+}
+
+// endpoint to let the proxy know that this server is back online after a crash
+app.post('/online', (req, res) => {
+    console.log(`Server ${PORT} is back online..`);
+    res.status(200).send(`Server ${PORT} is back online..`);
+});
+
+// update this server's list of active replica servers
+app.post('/update-lists', bodyParser.json(), (req, res) => {
+    const updatedLists = req.body.servers;
+    servers.length = 0; // clear array
+    updatedLists.forEach((s) => {
+        servers.push({ id: s.id, address: s.address });
+    });
+    console.log(`Server list updated`);
+    // res.status(200).send({ message: 'Server list updated' });
+});
 
 const replicateToServers = (method, path, data) => {
     servers.forEach((server) => {
