@@ -57,7 +57,7 @@ app.post('/upload', (req, res) => {
         res.json(response.data);
         // forward request to other replica servers
         if (req.body.flag != 'replica') {
-            replicateToServers('POST', '/upload', { name: req.query.name, flag: 'replica' });
+            replicateToServers('POST', '/upload', { name: req.query.name, file: req.body.file, flag: 'replica' });
         }
         })
         .catch((err) => {

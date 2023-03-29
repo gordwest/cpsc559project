@@ -1,4 +1,10 @@
 # CPSC559 Project - Distributed File System
+#TODOs
+- Let proxy know when a server is back online so it can be added back to the "active servers" list
+- When a proxy detects a server failure, let the other servers know of this failure (each server maintain an "active server" list? All share the list maintained by the proxy?)
+- Implement server crash recover to server 2&3 (fastForward() func)
+- Dynamically pick an active server to replicate when recovering (server 1 just asks server 2 atm)
+
 Distributed file system that allows users to upload, download and delete files. 
 <pre>
 Client --> Proxy --> Server --> 

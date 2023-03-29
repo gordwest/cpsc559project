@@ -10,15 +10,43 @@ const api = axios.create({
     baseURL: "https://us-east-1.aws.data.mongodb-api.com/app/filesystem-lkvhv/endpoint" // address to mongodb
 });
 
+const server2 = axios.create({
+    baseURL: "http://localhost:5555" // address to server 2
+});
+
 const uploadFile = (name, file) => api.post(`/upload?name=${name}`, {file:file}, {headers: {'content-type': 'application/json'}});
 const deleteFile = (name) => api.post(`/delete?name=${name}`);
 const downloadFile = (name) => api.get(`/download?name=${name}`);
+const clearDB = () => api.post(`/brick`);
 
 const servers = [
     { id: 2, address: 'http://localhost:5555' },
     { id: 3, address: 'http://localhost:7777' },
     //   { id: 1, address: 'http://localhost:3333' },
 ];
+
+// used to catch up a crashed server
+function fastForward() {
+    console.log("Recovering Crashed Server..")
+    // clear local db
+    api.post(`/brick`);
+    // query /files of an active server
+    server2.get(`/files`)
+        .then((response) => {
+            // populate local db with files from active server 
+            response.data.files.forEach((f) => {
+                uploadFile(f.name, f.file)
+            })
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+}
+
+// server starting in 'restart' mode -> fast forward to state of another active replica
+if (process.argv[2] == '-recover') {
+    fastForward()
+}
 
 const replicateToServers = (method, path, data) => {
     servers.forEach((server) => {
@@ -57,7 +85,7 @@ app.post('/upload', (req, res) => {
         res.json(response.data);
         // forward request to other replica servers
         if (req.body.flag != 'replica') {
-            replicateToServers('POST', '/upload', { name: req.query.name, flag: 'replica' });
+            replicateToServers('POST', '/upload', { name: req.query.name, file: req.body.file, flag: 'replica' });
         }
         })
         .catch((err) => {
