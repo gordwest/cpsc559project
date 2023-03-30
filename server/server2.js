@@ -68,7 +68,7 @@ app.post('/update-lists', bodyParser.json(), (req, res) => {
         servers.push({ id: s.id, address: s.address });
     });
     console.log(`Server list updated`);
-    // res.status(200).send({ message: 'Server list updated' });
+    res.status(200).send({ message: 'Server list updated' });
 });
 
 const replicateToServers = (method, path, data) => {
