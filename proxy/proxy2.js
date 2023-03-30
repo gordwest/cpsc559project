@@ -37,7 +37,7 @@ function addServer(server) {
 // notify other servers of updated server list
 function notifyServers(activeServers) {
     activeServers.forEach(server => {
-        axios.post(`${server}/update-lists`, {servers: activeServers})
+        axios.post(`${server.address}/update-lists`, {servers: activeServers})
         .then((res) => {
             console.log(`Notifying ${server} of updated server list...\n`);
         })
