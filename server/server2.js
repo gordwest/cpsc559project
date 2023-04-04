@@ -15,11 +15,7 @@ const deleteFile = (name) => api.post(`/delete?name=${name}`);
 const downloadFile = (name) => api.get(`/download?name=${name}`);
 const clearDB = () => api.post(`/brick`);
 
-let servers = [
-    { id: 1, address: 'http://localhost:1111' },
-    { id: 2, address: 'http://localhost:2222' },
-    { id: 3, address: 'http://localhost:3333' },
-];
+let servers = ['http://localhost:1111', 'http://localhost:2222', 'http://localhost:3333'];
 
 // used to catch up a crashed server
 function fastForward() {
@@ -27,7 +23,7 @@ function fastForward() {
     // clear local db
     api.post(`/brick`);
     // query /files of an active server (dynamically pick an active server to query via randomization)
-    const activeReplica = servers[Math.floor(Math.random() * servers.length)].address;
+    const activeReplica = servers[Math.floor(Math.random() * servers.length)];
     axios.get(`${activeReplica}/files`)
         .then((response) => {
             // populate local db with files from active server 
@@ -40,7 +36,7 @@ function fastForward() {
         });
 
     // after recovery, notify proxy that this server is back online
-    axios.post(`http://localhost:1111/online`, {server: `http://localhost:${PORT}`})
+    axios.post(`http://localhost:8888/online`, {server: `http://localhost:${PORT}`})
         .then ((response) => {
             console.log(`Notified proxy that server ${PORT} is back online..`);
         })
@@ -64,8 +60,8 @@ app.post('/online', (req, res) => {
 app.post('/update-lists', bodyParser.json(), (req, res) => {
     const updatedLists = req.body.servers;
     servers.length = 0; // clear array
-    updatedLists.forEach((s) => {
-        servers.push({ id: s.id, address: s.address });
+    updatedLists.forEach((server) => {
+        servers.push(server);
     });
     console.log(`Active server list: ${updatedLists}`);
     res.status(200).send({ message: 'Server list updated' });
@@ -73,17 +69,17 @@ app.post('/update-lists', bodyParser.json(), (req, res) => {
 
 const replicateToServers = (method, path, data) => {
     servers.forEach((server) => {
-        if (server.address != `http://localhost:${PORT}`) {
+        if (server != `http://localhost:${PORT}`) {
             axios({
                 method,
-                url: `${server.address}${path}?name=${data.name}`,
+                url: `${server}${path}?name=${data.name}`,
                 data
             })
             .then((response) => {
-                console.log(`Replicated ${method} ${path} to server ${server.id}`);
+                console.log(`Replicated ${method} ${path} to server ${PORT}`);
             })
             .catch((err) => {
-                console.log(`Error replicating ${method} ${path} to server ${server.id}:`, err);
+                console.log(`Error replicating ${method} ${path} to server ${PORT}:`, err);
             });
         }
     });

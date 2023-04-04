@@ -19,10 +19,9 @@ function addServer(server) {
     if (!servers.includes(server)){
         servers.push(server);
         console.log(`Server ${server} added to active server list: [${servers}]\n`);
-        // filter out the offline servers
-        const activeServers = servers.filter((s) => s !== server);
+
         // active server list becomes out of date after a server crash, update recovered server with current active server list
-        axios.post(`${server}/update-lists`, { servers: activeServers.map((s) => ({ id: servers.indexOf(s) + 1, address: s })) })
+        axios.post(`${server}/update-lists`, { servers: servers })
             .then((response) => {
                 console.log(`Updating server ${server} list current active server list...\n`);
             })
