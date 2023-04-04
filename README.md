@@ -1,9 +1,15 @@
 # CPSC559 Project - Distributed File System
-#TODOs
-- ~~Let proxy know when a server is back online so it can be added back to the "active servers" list~~
-- ~~When a proxy detects a server failure, let the other servers know of this failure (each server maintain an "active server" list? All share the list maintained by the proxy?)~~
-- ~~Implement server crash recover to server 2&3 (fastForward() func)~~
-- ~~Dynamically pick an active server to replicate when recovering (server 1 just asks server 2 atm)~~
+### Potential Demo Scenarios
+- [] Backup proxy has correct active server list when it takes over
+- [] What happens when two people try to delete/download the same file?
+- [] Prevent multiple files with same name being uploaded (not critical)
+- [] 
+- [] 
+- [?] Upload, delete, download works on remaining servers when 1-2 replicas crash (Backup Proxy)
+- [x] Upload, delete, download works on remaining servers when 1-2 replicas crash (Main Proxy)
+- [x] Proxy and all other servers get notified and update their active server list when a server crashes
+- [x] Fast forward works when restarting a crashed server (from main proxy)
+- [x] Backup proxy takes over if primary proxy fails
 
 
 Distributed file system that allows users to upload, download and delete files. 
@@ -29,6 +35,11 @@ node server
 cd server
 # run replica server 1
 node server2
+
+# new terminal
+cd server
+# run replica server 2
+node server3
 ```
 
 ### Proxy
@@ -39,6 +50,11 @@ npm ci
 
 # run proxy
 node proxy
+
+# new terminal
+# run backup proxy
+cd proxy
+node proxy2
 ```
 
 ### Client
@@ -52,22 +68,23 @@ npm start
 ```
 
 # HTTP Servers
-### Main Proxy -> (http://localhost:1111)
+### Main Proxy -> (http://localhost:8888)
 - Randomly picks a server to forwards HTTP requests to
 - Relays HTTP responses back to client
-### Backup Proxy -> (http://localhost:2222)
+### Backup Proxy -> (http://localhost:9999)
 
-### Main Server -> (http://localhost:3333)
+### Main Server -> (http://localhost:1111)
 - Receives HTTP requests from the proxy
 - Interacts directly with MongoDB
 - Replicates requests to other server(s) "gossip"
 
-### Server Replica 1 -> (http://localhost:5555)
-### Server Replica 2 -> (http://localhost:7777)
+### Server Replica 1 -> (http://localhost:2222)
+### Server Replica 2 -> (http://localhost:3333)
 
 # MongoDB Endpoints
 - Main MongoDB URL -> https://us-east-1.aws.data.mongodb-api.com/app/filesystem-lkvhv/endpoint
 - MongoDB Replica1 URL -> https://us-east-1.aws.data.mongodb-api.com/app/filesystemrep1-uzxxi/endpoint
+- MongoDB Replica2 URL -> https://us-east-1.aws.data.mongodb-api.com/app/filesystemrep2-tyemh/endpoint
 
 ### GET /Files
 Returns all files in the database.  
