@@ -1,7 +1,7 @@
 const { rejects } = require('assert');
 const express = require('express');
 const app = express();
-const PORT = 1111;
+const PORT = 8888;
 // const PORT = 25564;
 const doomsdays = 5; // number of requests before brick
 let req_count = 0;
@@ -19,7 +19,7 @@ function briiiick(req_count) {
     }
 }
 
-let servers = ['http://localhost:3333', 'http://localhost:5555', 'http://localhost:7777'];
+let servers = ['http://localhost:1111', 'http://localhost:2222', 'http://localhost:3333'];
 
 // use http-proxy to forward requests to other servers
 const httpProxy = require('http-proxy');
@@ -51,7 +51,8 @@ function addServer(server) {
 // notify other servers of updated server list
 function notifyServers(activeServers) {
     activeServers.forEach(server => {
-        axios.post(`${server.address}/update-lists`, {servers: activeServers})
+        console.log(server, activeServers)
+        axios.post(`${server}/update-lists`, {servers: activeServers})
         .then((res) => {
             console.log(`Notifying ${server} of updated server list...\n`);
         })

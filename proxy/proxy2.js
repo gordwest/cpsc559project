@@ -1,11 +1,11 @@
 const { rejects } = require('assert');
 const express = require('express');
 const app = express();
-const PORT = 2222;
+const PORT = 9999;
 // const PORT = 25560;
 let server_idx = 0;
 
-let servers = ['http://localhost:3333', 'http://localhost:5555', 'http://localhost:7777'];
+let servers = ['http://localhost:1111', 'http://localhost:2222', 'http://localhost:3333'];
 
 // use http-proxy to forward requests to other servers
 const httpProxy = require('http-proxy');
@@ -37,7 +37,7 @@ function addServer(server) {
 // notify other servers of updated server list
 function notifyServers(activeServers) {
     activeServers.forEach(server => {
-        axios.post(`${server.address}/update-lists`, {servers: activeServers})
+        axios.post(`${server}/update-lists`, {servers: activeServers})
         .then((res) => {
             console.log(`Notifying ${server} of updated server list...\n`);
         })

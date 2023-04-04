@@ -3,13 +3,13 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://localhost:1111', // target server (Main Proxy URL)
+    baseURL: 'http://localhost:8888', // target server (Main Proxy URL)
     // baseURL: 'http://localhost:25564/', // target server (Main Proxy URL)
     timeout: 10000 // time to respond
 });
 
 const api_backup = axios.create({
-    baseURL: 'http://localhost:2222', // target server (backup Proxy URL)
+    baseURL: 'http://localhost:9999', // target server (backup Proxy URL)
     // baseURL: 'http://localhost:25560/', // target server (backup Proxy URL)
     timeout: 10000 // time to respond
 });

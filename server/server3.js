@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const axios = require('axios');
 const app = express();
 
-const PORT = 7777;
+const PORT = 3333;
 app.use(bodyParser.json());
 
 const api = axios.create({
@@ -15,10 +15,10 @@ const deleteFile = (name) => api.post(`/delete?name=${name}`);
 const downloadFile = (name) => api.get(`/download?name=${name}`);
 const clearDB = () => api.post(`/brick`);
 
-const servers = [
-    { id: 1, address: 'http://localhost:3333' },
-    { id: 2, address: 'http://localhost:5555' },
-    // { id: 3, address: 'http://localhost:7777' },
+let servers = [
+    { id: 1, address: 'http://localhost:1111' },
+    { id: 2, address: 'http://localhost:2222' },
+    { id: 3, address: 'http://localhost:3333' },
 ];
 
 // used to catch up a crashed server
@@ -68,23 +68,25 @@ app.post('/update-lists', bodyParser.json(), (req, res) => {
     updatedLists.forEach((s) => {
         servers.push({ id: s.id, address: s.address });
     });
-    console.log(`Server list updated`);
+    console.log(`Active server list: ${updatedLists}`);
     res.status(200).send({ message: 'Server list updated' });
 });
 
 const replicateToServers = (method, path, data) => {
     servers.forEach((server) => {
-        axios({
-            method,
-            url: `${server.address}${path}?name=${data.name}`,
-            data
-        })
-        .then((response) => {
-            console.log(`Replicated ${method} ${path} to server ${server.id}`);
-        })
-        .catch((err) => {
-            console.log(`Error replicating ${method} ${path} to server ${server.id}:`, err);
-        });
+        if (server.address != `http://localhost:${PORT}`) {
+            axios({
+                method,
+                url: `${server.address}${path}?name=${data.name}`,
+                data
+            })
+            .then((response) => {
+                console.log(`Replicated ${method} ${path} to server ${server.id}`);
+            })
+            .catch((err) => {
+                console.log(`Error replicating ${method} ${path} to server ${server.id}:`, err);
+            });
+        }
     });
 };
 
