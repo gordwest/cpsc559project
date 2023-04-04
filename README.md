@@ -1,10 +1,10 @@
 # CPSC559 Project - Distributed File System
 ### Potential Demo Scenarios
-- [] Backup proxy has correct active server list when it takes over
-- [] What happens when two people try to delete/download the same file?
-- [] Prevent multiple files with same name being uploaded (not critical)
-- [] 
-- [] 
+- [ ] Backup proxy has correct active server list when it takes over
+- [ ] What happens when two people try to delete/download the same file?
+- [ ] Prevent multiple files with same name being uploaded (not critical)
+- [ ] 
+- [ ] 
 - [?] Upload, delete, download works on remaining servers when 1-2 replicas crash (Backup Proxy)
 - [x] Upload, delete, download works on remaining servers when 1-2 replicas crash (Main Proxy)
 - [x] Proxy and all other servers get notified and update their active server list when a server crashes
