@@ -46,7 +46,7 @@ function fastForward() {
 }
 
 // server starting in 'restart' mode -> fast forward to state of another active replica
-if (process.argv[2] == '-recover') {
+if (process.argv[2] == '-restart') {
     fastForward()
 }
 

@@ -41,6 +41,11 @@ cd server
 # run replica server 2
 node server3
 ```
+### Restart Crashed Server
+```bash
+# use the '-restart' flag
+node server -restart
+```
 
 ### Proxy
 ```bash

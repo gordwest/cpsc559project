@@ -60,6 +60,17 @@ function notifyServers(activeServers) {
     });
 }
 
+function notifyProxies(activeServers) {
+    var backup_proxy = 'http://localhost:9999'
+    axios.post(`${backup_proxy}/update-lists`, {servers: activeServers})
+    .then((res) => {
+        console.log(`Notifying ${backup_proxy} of updated server list...\n`);
+    })
+    .catch((err) => {
+        console.log(`Error notifying ${backup_proxy} of updated server list...\n`);
+    });
+}
+
 // endpoint to add server to active server list
 app.post(`/online`, bodyParser.json(), (req, res) => {
     const server = req.body.server;
@@ -92,6 +103,7 @@ const roundRobinServers = (req, res) => {
 
             // notify other servers of updated server list
             notifyServers(servers);
+            notifyProxies(servers);
 
             // replace failure with new successful response from other replica
             let server_redo = servers[0]

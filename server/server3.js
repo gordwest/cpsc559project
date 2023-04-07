@@ -23,7 +23,6 @@ function fastForward() {
     // clear local db
     api.post(`/brick`);
     // query /files of an active server (dynamically pick an active server to query via randomization)
-    console.log(`servers: ${servers}`);
     const activeReplica = servers[Math.floor(Math.random() * servers.length)];
     axios.get(`${activeReplica}/files`)
         .then((response) => {
@@ -47,7 +46,7 @@ function fastForward() {
 }
 
 // server starting in 'restart' mode -> fast forward to state of another active replica
-if (process.argv[2] == '-recover') {
+if (process.argv[2] == '-restart') {
     fastForward()
 }
 

@@ -46,6 +46,17 @@ function notifyServers(activeServers) {
     });
 }
 
+// update this server's list of active replica servers
+app.post('/update-lists', bodyParser.json(), (req, res) => {
+    const updatedLists = req.body.servers;
+    servers.length = 0; // clear array
+    updatedLists.forEach((server) => {
+        servers.push( server );
+    });
+    console.log(`Active server list: ${updatedLists}`);
+    res.status(200).send({ message: 'Server list updated' });
+});
+
 // endpoint to add server to active server list
 app.post(`/online`, bodyParser.json(), (req, res) => {
     const server = req.body.server;
