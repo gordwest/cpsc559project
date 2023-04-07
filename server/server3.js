@@ -46,7 +46,7 @@ function fastForward() {
 }
 
 // server starting in 'restart' mode -> fast forward to state of another active replica
-if (process.argv[2] == '-restart') {
+if (process.argv[2] == '-r') {
     fastForward()
 }
 
@@ -76,10 +76,10 @@ const replicateToServers = (method, path, data) => {
                 data
             })
             .then((response) => {
-                console.log(`Replicated ${method} ${path} to server ${PORT}`);
+                console.log(`Replicated ${method} ${path} to server ${server.slice(-1)}`);
             })
             .catch((err) => {
-                console.log(`Error replicating ${method} ${path} to server ${PORT}:`, err);
+                console.log(`Error replicating ${method} ${path} to server ${server.slice(-1)}:`, err);
             });
         }
     });

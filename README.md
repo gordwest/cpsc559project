@@ -1,13 +1,20 @@
 # CPSC559 Project - Distributed File System
+TODOs
+- Add a way for replica servers to track which proxy is talking to them -> necessary to restart server when main proxy crashes (currently hardcoded in Fastforword() method).
+- Add a legitimate form of synchronization -> maybe lock file or logical timestamps??
+- Reverse list of document when restarting crashed server to match order of other servers (not critial)
+- Update the report document
+- Add a 4th replica server?? Maybe ask TA
+- Find bugs/break the application (continuous)
+
 ### Potential Demo Scenarios
-- [ ] Backup proxy has correct active server list when it takes over
 - [ ] What happens when two people try to delete/download the same file?
 - [ ] Prevent multiple files with same name being uploaded (not critical)
-- [ ] 
-- [ ] 
-- [?] Upload, delete, download works on remaining servers when 1-2 replicas crash (Backup Proxy)
-- [x] Upload, delete, download works on remaining servers when 1-2 replicas crash (Main Proxy)
-- [x] Proxy and all other servers get notified and update their active server list when a server crashes
+- [x] Backup proxy has correct 'active server list' at all times
+- [x] App functionally continues to work on remaining servers when 1-2 replicas crash (Main Proxy)
+- [x] App functionally continues to work on remaining servers when 1-2 replicas crash (Backup Proxy)
+- [x] Proxy & replica servers get update their 'active server list' when a server crashes
+- [ ] Fast forward works when restarting a crashed server (from backup proxy)
 - [x] Fast forward works when restarting a crashed server (from main proxy)
 - [x] Backup proxy takes over if primary proxy fails
 
@@ -43,8 +50,8 @@ node server3
 ```
 ### Restart Crashed Server
 ```bash
-# use the '-restart' flag
-node server -restart
+# use the '-r' flag
+node server -r
 ```
 
 ### Proxy
@@ -53,8 +60,11 @@ node server -restart
 cd proxy
 npm ci
 
-# run proxy
+# run main proxy
 node proxy
+
+# run main proxy with 10 request "Doomsday clock"
+node proxy 10
 
 # new terminal
 # run backup proxy

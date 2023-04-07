@@ -3,9 +3,13 @@ const express = require('express');
 const app = express();
 const PORT = 8888;
 // const PORT = 25564;
-const doomsdays = 5; // number of requests before brick
+let doomsdays = 999; // number of requests before brick
 let req_count = 0;
 let server_idx = 0;
+
+if (process.argv[2] != NaN) {
+    doomsdays = process.argv[2]
+}
 
 // brick proxy after doomsday reached
 function briiiick(req_count) {
@@ -28,22 +32,17 @@ const axios = require('axios');
 const bodyParser = require('body-parser');
 
 // add recovered serer back to active server list
-function addServer(server) {
+function addServer(restarted_server) {
     // check if server already exists in active server list
-    if (!servers.includes(server)){
-        servers.push(server);
-        console.log(`Server ${server} added to active server list: [${servers}]\n`);
+    if (!servers.includes(restarted_server)){
+        servers.push(restarted_server);
+        console.log(`\nServer ${restarted_server} added to active server list\n`);
 
         // active server list becomes out of date after a server crash, update recovered server with current active server list
-        axios.post(`${server}/update-lists`, { servers: servers })
-            .then((response) => {
-                console.log(`Updating server ${server} list current active server list...\n`);
-            })
-            .catch((error) => {
-                console.log(`Error updating recovered server ${server} with current active server list...\n`);
-            });
+        notifyServers(servers);
+        notifyProxies(servers);
     } else {
-        console.log(`Server ${server} already exists in active server list!\n`);
+        console.log(`Server ${restarted_server} already exists in active server list!\n`);
     }
 }
 
@@ -52,31 +51,26 @@ function notifyServers(activeServers) {
     activeServers.forEach(server => {
         axios.post(`${server}/update-lists`, {servers: activeServers})
         .then((res) => {
-            console.log(`Notifying ${server} of updated server list...\n`);
+            console.log(`Notifying ${server} of updated server list..`);
         })
         .catch((err) => {
-            console.log(`Error notifying ${server} of updated server list...\n`);
+            console.log(`Error notifying ${server} of updated server list..`);
         });
     });
 }
 
+// notify other proxy of updated server list
 function notifyProxies(activeServers) {
     var backup_proxy = 'http://localhost:9999'
     axios.post(`${backup_proxy}/update-lists`, {servers: activeServers})
     .then((res) => {
-        console.log(`Notifying ${backup_proxy} of updated server list...\n`);
+        console.log(`Notifying ${backup_proxy} of updated server list..`);
     })
     .catch((err) => {
-        console.log(`Error notifying ${backup_proxy} of updated server list...\n`);
+        console.log(`Error notifying ${backup_proxy} of updated server list..`);
     });
+    console.log() // for readability
 }
-
-// endpoint to add server to active server list
-app.post(`/online`, bodyParser.json(), (req, res) => {
-    const server = req.body.server;
-    addServer(server);
-    res.send(`Server ${server} added to active server list: [${servers}]\n`);
-});
 
 const roundRobinServers = (req, res) => {
     // get server addr
@@ -88,7 +82,7 @@ const roundRobinServers = (req, res) => {
             reject(server);
         });
     });
-    console.log(''); // newline for readability
+    // console.log(''); // newline for readability
 
     serverPromise
         .then((server) => {
@@ -120,15 +114,21 @@ const roundRobinServers = (req, res) => {
                 .catch((error) => {
                     console.log(`failed..`);
                 })
-
         });
         // go to next server in round robin
         if (server_idx >= servers.length-1) server_idx = 0
         else server_idx++;
 
     // brick server
-    // briiiick(req_count++) // UNCOMMENT TO ACTIVATE DOOMSDAY CLOCK
+    briiiick(req_count++) // UNCOMMENT TO ACTIVATE DOOMSDAY CLOCK
 }
+
+// endpoint to add server to active server list
+app.post(`/online`, bodyParser.json(), (req, res) => {
+    var server = req.body.server;
+    addServer(server);
+    res.send(`Server ${server} added to active server list`);
+});
 
 // allow cross-origin requests
 app.use((req, res, next) => {
