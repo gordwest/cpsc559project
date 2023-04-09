@@ -4,6 +4,9 @@ const axios = require('axios');
 const app = express();
 
 const PORT = 2222;
+const server_id = 2;
+const MAIN_PROXY = 'http://localhost:8888';
+const BACKUP_PROXY = 'http://localhost:9999';
 app.use(bodyParser.json());
 
 const api = axios.create({
@@ -13,9 +16,19 @@ const api = axios.create({
 const uploadFile = (name, file) => api.post(`/upload?name=${name}`, {file:file}, {headers: {'content-type': 'application/json'}});
 const deleteFile = (name) => api.post(`/delete?name=${name}`);
 const downloadFile = (name) => api.get(`/download?name=${name}`);
-const clearDB = () => api.post(`/brick`);
 
 let servers = ['http://localhost:1111', 'http://localhost:2222', 'http://localhost:3333'];
+
+// repick if server picks itself
+function pickRandomServer() {
+    var activeReplica = servers[Math.floor(Math.random() * servers.length)];
+    if (activeReplica == `http://localhost:${PORT}`) {
+        return pickRandomServer()
+    }
+    else {
+        return activeReplica
+    }
+}
 
 // used to catch up a crashed server
 function fastForward() {
@@ -23,7 +36,8 @@ function fastForward() {
     // clear local db
     api.post(`/brick`);
     // query /files of an active server (dynamically pick an active server to query via randomization)
-    const activeReplica = servers[Math.floor(Math.random() * servers.length)];
+    const activeReplica = pickRandomServer();
+    console.log(`Refreshing DB from ${activeReplica}.`)
     axios.get(`${activeReplica}/files`)
         .then((response) => {
             // populate local db with files from active server 
@@ -35,13 +49,24 @@ function fastForward() {
             console.log(err);
         });
 
-    // after recovery, notify proxy that this server is back online
-    axios.post(`http://localhost:8888/online`, {server: `http://localhost:${PORT}`})
-        .then ((response) => {
-            console.log(`Notified proxy that server ${PORT} is back online..`);
+        backOnline(); // notify proxies server is online
+}
+
+function backOnline() {
+    axios.post(`${MAIN_PROXY}/online`, {server: `http://localhost:${PORT}`})
+        .then((response) => {
+            console.log(`Notified main proxy-> server ${server_id} back online.`);
         })
         .catch((err) => {
-            console.log(`Error notifying proxy that server ${PORT} is back online:`, err);
+            console.log(`Error notifying main proxy-> server ${server_id} back online.`);
+            // resend to backup proxy
+            axios.post(`${BACKUP_PROXY}/online`, {server: `http://localhost:${PORT}`})
+                .then((response) => {
+                    console.log(`Notified backup proxy-> server ${server_id} back online.`);
+                })
+                .catch((err) => {
+                    console.log(`Error notifying backup proxy-> server ${server_id} back online.`);
+                });
         });
 }
 
@@ -52,8 +77,8 @@ if (process.argv[2] == '-r') {
 
 // endpoint to let the proxy know that this server is back online after a crash
 app.post('/online', (req, res) => {
-    console.log(`Server ${PORT} is back online..`);
-    res.status(200).send(`Server ${PORT} is back online..`);
+    console.log(`Server ${server_id} back online.`);
+    res.status(200).send(`Server ${server_id} back online.`);
 });
 
 // update this server's list of active replica servers
@@ -61,9 +86,9 @@ app.post('/update-lists', bodyParser.json(), (req, res) => {
     const updatedLists = req.body.servers;
     servers.length = 0; // clear array
     updatedLists.forEach((server) => {
-        servers.push(server);
+        servers.push( server );
     });
-    console.log(`Active server list: ${updatedLists}`);
+    console.log(`Active servers: ${updatedLists}`);
     res.status(200).send({ message: 'Server list updated' });
 });
 
@@ -76,18 +101,18 @@ const replicateToServers = (method, path, data) => {
                 data
             })
             .then((response) => {
-                console.log(`Replicated ${method} ${path} to server ${server.slice(-1)}`);
+                console.log(`Replicated ${method} ${path} to server ${server.slice(-1)}.`);
             })
             .catch((err) => {
-                console.log(`Error replicating ${method} ${path} to server ${server.slice(-1)}:`, err);
+                console.log(`Error replicating ${method} ${path} to server ${server.slice(-1)}.`);
             });
         }
     });
 };
-
+  
 // retreive all files from db
 app.get('/files', (req, res) => {
-    console.log(`Forwarding ${req.method} ${req.path} request to mongodb..`);
+    console.log(`Forwarding ${req.method} ${req.path} request to mongodb.`);
     api.get(`/files`)
     .then((response) => {
       res.json({ files: response.data });
@@ -100,7 +125,7 @@ app.get('/files', (req, res) => {
 
 // add new file to db
 app.post('/upload', (req, res) => {
-    console.log(`Forwarding ${req.method} ${req.path} request to mongodb..`);
+    console.log(`Forwarding ${req.method} ${req.path} request to mongodb.`);
     uploadFile(req.query.name, req.body.file)
     .then((response) => {
         res.json(response.data);
@@ -116,7 +141,7 @@ app.post('/upload', (req, res) => {
 });
 
 app.get('/download', (req, res) => {
-  console.log(`Forwarding ${req.method} ${req.path} request to mongodb..`);
+  console.log(`Forwarding ${req.method} ${req.path} request to mongodb.`);
   downloadFile(req.query.name)
   .then((response) => {
     res.json(response.data);
@@ -128,7 +153,7 @@ app.get('/download', (req, res) => {
 });
 
 app.post('/delete', (req, res) => {
-    console.log(`Forwarding ${req.method} ${req.path} request to mongodb..`);
+    console.log(`Forwarding ${req.method} ${req.path} request to mongodb.`);
     deleteFile(req.query.name)
     .then((response) => {
     res.json(response.data);

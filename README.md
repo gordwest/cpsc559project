@@ -1,6 +1,5 @@
 # CPSC559 Project - Distributed File System
 TODOs
-- Add a way for replica servers to track which proxy is talking to them -> necessary to restart server when main proxy crashes (currently hardcoded in Fastforword() method).
 - Add a legitimate form of synchronization -> maybe lock file or logical timestamps??
 - Reverse list of document when restarting crashed server to match order of other servers (not critial)
 - Update the report document
@@ -14,7 +13,7 @@ TODOs
 - [x] App functionally continues to work on remaining servers when 1-2 replicas crash (Main Proxy)
 - [x] App functionally continues to work on remaining servers when 1-2 replicas crash (Backup Proxy)
 - [x] Proxy & replica servers get update their 'active server list' when a server crashes
-- [ ] Fast forward works when restarting a crashed server (from backup proxy)
+- [x] Fast forward works when restarting a crashed server (from backup proxy)
 - [x] Fast forward works when restarting a crashed server (from main proxy)
 - [x] Backup proxy takes over if primary proxy fails
 

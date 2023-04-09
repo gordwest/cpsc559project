@@ -18,7 +18,7 @@ function addServer(restarted_server) {
     // check if server already exists in active server list
     if (!servers.includes(restarted_server)){
         servers.push(restarted_server);
-        console.log(`\nServer ${restarted_server} added to active server list\n`);
+        console.log(`\nServer ${restarted_server} added to active server list.\n`);
 
         // active server list becomes out of date after a server crash, update recovered server with current active server list
         notifyServers(servers);
@@ -33,10 +33,10 @@ function notifyServers(activeServers) {
     activeServers.forEach(server => {
         axios.post(`${server}/update-lists`, {servers: activeServers})
         .then((res) => {
-            console.log(`Notifying ${server} of updated server list..`);
+            console.log(`Notifying ${server} of updated server list.`);
         })
         .catch((err) => {
-            console.log(`Error notifying ${server} of updated server list..`);
+            console.log(`Error notifying ${server} of updated server list.`);
         });
     });
 }
@@ -46,12 +46,11 @@ function notifyProxies(activeServers) {
     var main_proxy = 'http://localhost:8888'
     axios.post(`${main_proxy}/update-lists`, {servers: activeServers})
     .then((res) => {
-        console.log(`Notifying ${main_proxy} of updated server list..`);
+        console.log(`Notifying ${main_proxy} of updated server list.`);
     })
     .catch((err) => {
-        console.log(`Error notifying ${main_proxy} of updated server list..`);
+        console.log(`Error notifying ${main_proxy} of updated server list.`);
     });
-    console.log() // for readability
 }
 
 const roundRobinServers = (req, res) => {
@@ -64,18 +63,18 @@ const roundRobinServers = (req, res) => {
             reject(server);
         });
     });
-    // console.log(''); // newline for readability
 
     serverPromise
         .then((server) => {
             console.log(`Forwarding request to ${server}`);
         })
         .catch((error) => {
-            console.log(`Server ${error} crashed..`);
+            console.log(`\nServer ${error} crashed!`);
             const index = servers.indexOf(error);
             servers.splice(index, 1);
             console.log(`Active server list: [${servers}]\n`)
             server_idx = 0 // reset index
+            console.log() // new line for readability
 
             // notify other servers of updated server list
             notifyServers(servers);
@@ -84,7 +83,7 @@ const roundRobinServers = (req, res) => {
             // replace failure with new successful response from other replica
             let server_redo = servers[0]
             const serverPromise_redo = new Promise((resolve, reject) => {
-                console.log(`Redirecting ${req.method} ${req.path} request to ${server_redo}\n`)
+                console.log(`Redirecting ${req.method} ${req.path} request to ${server_redo}.\n`)
                 proxy.web(req, res, { target: server_redo }, () => {
                     reject(server_redo);
                 });
