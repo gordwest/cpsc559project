@@ -34,7 +34,15 @@ export const retreiveFiles = () => {
         });
     };
   
-export const uploadFile = (name, file) => leader_proxy.post(`/upload?name=${name}`, {file:file}, {headers: {'content-type': 'application/json'}});
-export const deleteFile = (name) => leader_proxy.post(`/delete?name=${name}`);
-export const downloadFile = (name) => leader_proxy.get(`/download?name=${name}`);
+// export const uploadFile = (name, file) => leader_proxy.post(`/upload?name=${name}`, {file:file}, {headers: {'content-type': 'application/json'}});
+// export const deleteFile = (name) => leader_proxy.post(`/delete?name=${name}`);
+// export const downloadFile = (name) => leader_proxy.get(`/download?name=${name}`);
+
+const getTimestamp = () => {
+    return { 'x-timestamp': Date.now().toString() };
+};
+
+export const uploadFile = (name, file) => leader_proxy.post(`/upload?name=${name}`, {file:file}, {headers: {...getTimestamp(), 'content-type': 'application/json'}});
+export const deleteFile = (name) => leader_proxy.post(`/delete?name=${name}`, {headers: getTimestamp()});
+export const downloadFile = (name) => leader_proxy.get(`/download?name=${name}`, {headers: getTimestamp()});
 
