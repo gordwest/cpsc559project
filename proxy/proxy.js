@@ -1,5 +1,6 @@
 const { rejects } = require('assert');
 const express = require('express');
+const AsyncLock = require('async-lock');
 const app = express();
 const PORT = 8888;
 // const PORT = 25564;
@@ -72,52 +73,60 @@ function notifyProxies(activeServers) {
     console.log() // for readability
 }
 
+// acquire and release locks to ensure synchronization
+const lock = new AsyncLock({});
+
 const roundRobinServers = (req, res) => {
     // get server addr
     const server = servers[server_idx];
+
+    const file = req.method + req.path;
 
     const serverPromise = new Promise((resolve, reject) => {
         console.log(`Forwarding ${req.method} ${req.path} request to ${server}`)
         proxy.web(req, res, { target: server }, () => {
             reject(server);
         });
+        
     });
     // console.log(''); // newline for readability
 
-    serverPromise
-        .then((server) => {
-            console.log(`Forwarding request to ${server}`);
-        })
-        .catch((error) => {
-            console.log(`Server ${error} crashed..`);
-            const index = servers.indexOf(error);
-            servers.splice(index, 1);
-            console.log(`Active server list: [${servers}]\n`)
-            server_idx = 0 // reset index
+    lock.acquire(file, function(done) {
+        serverPromise
+            .then((server) => {
+                console.log(`Forwarding request to ${server}`);
+            })
+            .catch((error) => {
+                console.log(`Server ${error} crashed..`);
+                const index = servers.indexOf(error);
+                servers.splice(index, 1);
+                console.log(`Active server list: [${servers}]\n`)
+                server_idx = 0 // reset index
 
-            // notify other servers of updated server list
-            notifyServers(servers);
-            notifyProxies(servers);
+                // notify other servers of updated server list
+                notifyServers(servers);
+                notifyProxies(servers);
 
-            // replace failure with new successful response from other replica
-            let server_redo = servers[0]
-            const serverPromise_redo = new Promise((resolve, reject) => {
-                console.log(`Redirecting ${req.method} ${req.path} request to ${server_redo}\n`)
-                proxy.web(req, res, { target: server_redo }, () => {
-                    reject(server_redo);
+                // replace failure with new successful response from other replica
+                let server_redo = servers[0]
+                const serverPromise_redo = new Promise((resolve, reject) => {
+                    console.log(`Redirecting ${req.method} ${req.path} request to ${server_redo}\n`)
+                    proxy.web(req, res, { target: server_redo }, () => {
+                        reject(server_redo);
+                    });
                 });
-            });
-            serverPromise_redo
+                serverPromise_redo
                 .then((server_redo) => {
                     res.send(res); // reply back to client with redirected response
                 })
                 .catch((error) => {
                     console.log(`failed..`);
                 })
-        });
+            });
         // go to next server in round robin
-        if (server_idx >= servers.length-1) server_idx = 0
-        else server_idx++;
+    });
+    if (server_idx >= servers.length-1) server_idx = 0
+    else server_idx++;
 
     // brick server
     briiiick(req_count++) // UNCOMMENT TO ACTIVATE DOOMSDAY CLOCK
