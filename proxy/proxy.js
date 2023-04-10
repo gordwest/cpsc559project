@@ -77,10 +77,16 @@ const requestQueue = [];
 function processRequests() {
     requestQueue.sort((a, b) => parseInt(a.req.headers['x-timestamp']) - parseInt(b.req.headers['x-timestamp']));
 
+    // console.log(`Request queue length: ${requestQueue.length}`);
+    // console.log(`Request queue contents:`, requestQueue);
+
     // the first request in the queue gets processed and removed from the queue
     if (requestQueue.length > 0) {
         const { req, res } = requestQueue.shift();
-        console.log(`Processing request with timestamp: ${req.headers['x-timestamp']}`); // Add console log for timestamp
+        if (req.path === '/delete' || req.path === '/upload' || req.path === '/download') { // check if request method is DELETE or POST
+            console.log(`Processing ${req.method} request with timestamp: ${req.headers['x-timestamp']}`);
+        }
+        // console.log(`Processing request with timestamp: ${req.headers['x-timestamp']}, from client port: ${req.socket.remotePort}`); // Add console log for timestamp and client port
         roundRobinServers(req, res);
     }
 

@@ -45,6 +45,6 @@ const getTimestamp = () => {
 
 
 export const uploadFile = (name, file) => leader_proxy.post(`/upload?name=${name}`, {file:file}, {headers: {...getTimestamp(), 'content-type': 'application/json'}});
-export const deleteFile = (name) => leader_proxy.post(`/delete?name=${name}`, {headers: getTimestamp()});
+export const deleteFile = (name) => leader_proxy.post(`/delete?name=${name}`, {}, {headers: getTimestamp()});
 export const downloadFile = (name) => leader_proxy.get(`/download?name=${name}`, {headers: getTimestamp()});
 
