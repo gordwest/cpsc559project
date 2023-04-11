@@ -92,7 +92,6 @@ function roundRobinServers(req, res) {
             servers.splice(index, 1);
             console.log(`Active server list: [${servers}]\n`)
             server_idx = 0 // reset index
-            console.log() // new line for readability
 
             // notify other servers of updated server list
             notifyServers(servers);
