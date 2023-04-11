@@ -34,7 +34,6 @@ export const retreiveFiles = () => {
         });
     };
 
-
 const getTimestamp = () => {
     logicalCounter++;
     return { 'x-timestamp': logicalCounter.toString() };
