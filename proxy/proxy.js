@@ -73,23 +73,24 @@ function notifyProxies(activeServers) {
 
 const requestQueue = [];
 
+function printRequestQueueTimestamps() {
+    console.log("\nCurrent requestQueue timestamps:");
+    requestQueue.forEach((requestWrapper, index) => {
+        console.log(`[${index}]: ${requestWrapper.req.headers['x-timestamp']}, ${requestWrapper.req.url}`);
+    });
+}
 // function that processes requests in the queue in order of timestamp (x-timestamp) header
 function processRequests() {
     requestQueue.sort((a, b) => parseInt(a.req.headers['x-timestamp']) - parseInt(b.req.headers['x-timestamp']));
-
-    // console.log(`Request queue length: ${requestQueue.length}`);
-    // console.log(`Request queue contents:`, requestQueue);
 
     // the first request in the queue gets processed and removed from the queue
     if (requestQueue.length > 0) {
         const { req, res } = requestQueue.shift();
         if (req.path === '/delete' || req.path === '/upload' || req.path === '/download') { // check if request method is DELETE or POST
-            console.log(`Processing ${req.method} request with timestamp: ${req.headers['x-timestamp']}`);
+            console.log(`\nTimestamp: ${req.headers['x-timestamp']}, ${req.url}`); // Add console log for timestamp and client port
         }
-        // console.log(`Processing request with timestamp: ${req.headers['x-timestamp']}, from client port: ${req.socket.remotePort}`); // Add console log for timestamp and client port
         roundRobinServers(req, res);
     }
-
     // timeout to process the next request in the queue
     setTimeout(processRequests, 1000);
 }
@@ -154,14 +155,6 @@ app.post(`/online`, bodyParser.json(), (req, res) => {
 });
 
 // allow cross-origin requests
-// app.use((req, res, next) => {
-//     res.setHeader('Access-Control-Allow-Origin', '*');
-//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-//     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-//     next();
-// });
-
-// allow cross-origin requests
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS'); // Add OPTIONS method
@@ -175,9 +168,9 @@ app.use((req, res, next) => {
     }
 });
 
-// app.use('/', roundRobinServers);
 app.use('/', (req, res) => {
     requestQueue.push({ req, res });
+    printRequestQueueTimestamps();
 });
 
 app.listen(PORT, () => {
