@@ -1,22 +1,4 @@
 # CPSC559 Project - Distributed File System
-TODOs
-- Add a legitimate form of synchronization -> maybe lock file or logical timestamps??
-- Reverse list of document when restarting crashed server to match order of other servers (not critial)
-- Update the report document
-- Add a 4th replica server?? Maybe ask TA
-- Find bugs/break the application (continuous)
-
-### Potential Demo Scenarios
-- [ ] What happens when two people try to delete/download the same file?
-- [ ] Prevent multiple files with same name being uploaded (not critical)
-- [x] Backup proxy has correct 'active server list' at all times
-- [x] App functionally continues to work on remaining servers when 1-2 replicas crash (Main Proxy)
-- [x] App functionally continues to work on remaining servers when 1-2 replicas crash (Backup Proxy)
-- [x] Proxy & replica servers get update their 'active server list' when a server crashes
-- [x] Fast forward works when restarting a crashed server (from backup proxy)
-- [x] Fast forward works when restarting a crashed server (from main proxy)
-- [x] Backup proxy takes over if primary proxy fails
-
 
 Distributed file system that allows users to upload, download and delete files. 
 <pre>
