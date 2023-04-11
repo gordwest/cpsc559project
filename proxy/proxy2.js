@@ -56,25 +56,32 @@ function notifyProxies(activeServers) {
 const requestQueue = [];
 
 function printRequestQueueTimestamps() {
-    console.log("\nCurrent requestQueue timestamps:");
+    console.log("\nCurrent requestQueue:");
     requestQueue.forEach((requestWrapper, index) => {
-        console.log(`[${index}]: ${requestWrapper.req.headers['x-timestamp']}, ${requestWrapper.req.url}`);
+        console.log(`[${index}]: ${requestWrapper.req.url}`);
     });
 }
-// function that processes requests in the queue in order of timestamp (x-timestamp) header
+
+let globalTS = 0;
 function processRequests() {
     requestQueue.sort((a, b) => parseInt(a.req.headers['x-timestamp']) - parseInt(b.req.headers['x-timestamp']));
 
-    // the first request in the queue gets processed and removed from the queue
     if (requestQueue.length > 0) {
         const { req, res } = requestQueue.shift();
-        if (req.path === '/delete' || req.path === '/upload' || req.path === '/download') { // check if request method is DELETE or POST
-            console.log(`\nTimestamp: ${req.headers['x-timestamp']}, ${req.url}`); // Add console log for timestamp and client port
+
+        const clientTS = parseInt(req.headers['x-timestamp']);
+        if (!isNaN(clientTS)) {
+            logicalCounter = Math.max(globalTS, clientTS);
+        }
+        globalTS++;
+        req.headers['x-timestamp'] = globalTS.toString();
+
+        if (req.path === '/delete' || req.path === '/upload' || req.path === '/download') {
+            console.log(`\nTimestamp: ${req.headers['x-timestamp']}, ${req.url}`);
         }
         roundRobinServers(req, res);
     }
-    // timeout to process the next request in the queue
-    setTimeout(processRequests, 1000);
+    setTimeout(processRequests, 500);
 }
 
 processRequests();
