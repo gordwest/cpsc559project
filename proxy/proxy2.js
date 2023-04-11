@@ -86,12 +86,11 @@ function processRequests() {
 
 processRequests();
 
-const roundRobinServers = (req, res) => {
     // get server addr
     const server = servers[server_idx];
 
     const serverPromise = new Promise((resolve, reject) => {
-        console.log(`Forwarding ${req.method} ${req.path} request to ${server}`)
+        console.log(`Forwarding ${req.method} ${req.path} request to ${server}.`)
         proxy.web(req, res, { target: server }, () => {
             reject(server);
         });
@@ -99,19 +98,18 @@ const roundRobinServers = (req, res) => {
 
     serverPromise
         .then((server) => {
-            console.log(`Forwarding request to ${server}`);
+            console.log(`Forwarding request to ${server}.`);
         })
         .catch((error) => {
-            console.log(`\nServer ${error} crashed!`);
+            console.log(`Server ${error} crashed!`);
             const index = servers.indexOf(error);
             servers.splice(index, 1);
             console.log(`Active server list: [${servers}]\n`)
             server_idx = 0 // reset index
-            console.log() // new line for readability
 
             // notify other servers of updated server list
             notifyServers(servers);
-            // notifyProxies(servers);
+            notifyProxies(servers);
 
             // replace failure with new successful response from other replica
             let server_redo = servers[0]
@@ -132,7 +130,48 @@ const roundRobinServers = (req, res) => {
         // go to next server in round robin
         if (server_idx >= servers.length-1) server_idx = 0
         else server_idx++;
-}
+};
+
+function broadcastServers(req, res) {
+    const requests = servers.map((server) => { // map each server to a promise
+        return new Promise((resolve, reject) => { // create a promise for each server
+            console.log(`Forwarding ${req.method} ${req.path} request to ${server}`)           
+            proxy.web(req, res, { target: server }, () => {
+                // resolve(server);
+                reject(server);
+            });
+        });
+    });
+    console.log(''); // newline for readability
+    
+    Promise.all(requests)
+        .then((server) => {
+            console.log(`Forwarding request to ${server}`);
+        })
+        .catch((error) => {
+            console.log(`Server ${error} crashed!`);
+            const index = servers.indexOf(error);
+            servers.splice(index, 1);
+            console.log(`Active server list: [${servers}]\n`)
+            server_idx = 0 // reset index
+
+            // notify other servers of updated server list
+            notifyServers(servers);
+            notifyProxies(servers);
+
+            res.send("server crashed..");
+        });
+};
+
+// determines how to handle client request
+const requestHandler = (req, res) => {
+    if (req.method == 'GET' || req.method == 'OPTIONS') {
+        roundRobinServers(req, res)
+    }
+    if (req.method == 'POST') {
+        broadcastServers(req, res)
+    }
+};
 
 // update this server's list of active replica servers
 app.post('/update-lists', bodyParser.json(), (req, res) => {

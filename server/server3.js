@@ -140,9 +140,9 @@ app.post('/upload', (req, res) => {
     .then((response) => {
         res.json(response.data);
         // forward request to other replica servers
-        if (req.body.flag != 'replica') {
-            replicateToServers('POST', '/upload', { name: req.query.name, file: req.body.file, flag: 'replica' });
-        }
+        // if (req.body.flag != 'replica') {
+        //     replicateToServers('POST', '/upload', { name: req.query.name, file: req.body.file, flag: 'replica' });
+        // }
         })
         .catch((err) => {
         console.log(err);
@@ -168,9 +168,9 @@ app.post('/delete', (req, res) => {
     .then((response) => {
     res.json(response.data);
         // forward request to other replica servers
-        if (req.body.flag != 'replica') {
-            replicateToServers('POST', '/delete', { name: req.query.name, flag: 'replica' });
-        }
+        // if (req.body.flag != 'replica') {
+        //     replicateToServers('POST', '/delete', { name: req.query.name, flag: 'replica' });
+        // }
     })
     .catch((err) => {
         console.log(err);
