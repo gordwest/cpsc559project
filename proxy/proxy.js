@@ -74,9 +74,9 @@ function notifyProxies(activeServers) {
 const requestQueue = [];
 
 function printRequestQueueTimestamps() {
-    console.log("\nCurrent requestQueue timestamps:");
+    console.log("\nCurrent requestQueue:");
     requestQueue.forEach((requestWrapper, index) => {
-        console.log(`[${index}]: ${requestWrapper.req.headers['x-timestamp']}, ${requestWrapper.req.url}`);
+        console.log(`[${index}]: ${requestWrapper.req.url}`);
     });
 }
 
@@ -103,10 +103,6 @@ function processRequests() {
 }
 
 processRequests();
-
-app.get('/get-logical-clock', (req, res) => {
-    res.send({ logicalCounter });
-});
 
 const roundRobinServers = (req, res) => {
     // get server addr

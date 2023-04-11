@@ -15,7 +15,7 @@ const api_backup = axios.create({
 });
 
 let leader_proxy = api
-
+let logicalCounter = 0;
 export const retreiveFiles = () => {
     return leader_proxy.get(`/files`)
     .then(response => {
@@ -33,7 +33,7 @@ export const retreiveFiles = () => {
         .catch(err => console.log(err));
         });
     };
-let logicalCounter = 0;
+
 
 const getTimestamp = () => {
     logicalCounter++;
