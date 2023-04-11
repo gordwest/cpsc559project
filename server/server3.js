@@ -109,6 +109,16 @@ const replicateToServers = (method, path, data) => {
         }
     });
 };
+
+// output timestamp of request
+app.use((req, res, next) => {
+    const timestamp = req.get('x-timestamp');
+    if (timestamp) {
+        console.log(`Timestamp: ${timestamp}, ${req.url}`);
+    }
+    next();
+});
+
   
 // retreive all files from db
 app.get('/files', (req, res) => {
