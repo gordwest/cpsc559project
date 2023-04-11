@@ -71,10 +71,35 @@ function notifyProxies(activeServers) {
     });
 }
 
+const requestQueue = [];
+
+function printRequestQueueTimestamps() {
+    console.log("\nCurrent requestQueue timestamps:");
+    requestQueue.forEach((requestWrapper, index) => {
+        console.log(`[${index}]: ${requestWrapper.req.headers['x-timestamp']}, ${requestWrapper.req.url}`);
+    });
+}
+// function that processes requests in the queue in order of timestamp (x-timestamp) header
+function processRequests() {
+    requestQueue.sort((a, b) => parseInt(a.req.headers['x-timestamp']) - parseInt(b.req.headers['x-timestamp']));
+
+    // the first request in the queue gets processed and removed from the queue
+    if (requestQueue.length > 0) {
+        const { req, res } = requestQueue.shift();
+        if (req.path === '/delete' || req.path === '/upload' || req.path === '/download') { // check if request method is DELETE or POST
+            console.log(`\nTimestamp: ${req.headers['x-timestamp']}, ${req.url}`); // Add console log for timestamp and client port
+        }
+        requestHandler(req, res);
+    }
+    // timeout to process the next request in the queue
+    setTimeout(processRequests, 1000);
+}
+
+processRequests();
+
 function roundRobinServers(req, res) {
     // get server addr
     const server = servers[server_idx];
-
     const serverPromise = new Promise((resolve, reject) => {
         console.log(`Forwarding ${req.method} ${req.path} request to ${server}.`)
         proxy.web(req, res, { target: server }, () => {
@@ -176,12 +201,21 @@ app.post(`/online`, bodyParser.json(), (req, res) => {
 // allow cross-origin requests
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    next();
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS'); // Add OPTIONS method
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, x-timestamp'); // Add x-timestamp header
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+    if (req.method === 'OPTIONS') { // Preflight request. Reply successfully:
+        res.status(200).send();
+    } else {
+        next();
+    }
 });
 
-app.use('/', requestHandler);
+app.use('/', (req, res) => {
+    requestQueue.push({ req, res });
+    printRequestQueueTimestamps();
+});
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);

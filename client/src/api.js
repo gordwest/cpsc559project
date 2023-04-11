@@ -34,7 +34,24 @@ export const retreiveFiles = () => {
         });
     };
   
-export const uploadFile = (name, file) => leader_proxy.post(`/upload?name=${name}`, {file:file}, {headers: {'content-type': 'application/json'}});
-export const deleteFile = (name) => leader_proxy.post(`/delete?name=${name}`);
-export const downloadFile = (name) => leader_proxy.get(`/download?name=${name}`);
+// export const uploadFile = (name, file) => leader_proxy.post(`/upload?name=${name}`, {file:file}, {headers: {'content-type': 'application/json'}});
+// export const deleteFile = (name) => leader_proxy.post(`/delete?name=${name}`);
+// export const downloadFile = (name) => leader_proxy.get(`/download?name=${name}`);
 
+// add timestamp to header
+// const getTimestamp = () => {
+//     return { 'x-timestamp': new Date().toISOString() };
+// };
+
+let logicalCounter = 0;
+
+const getTimestamp = () => {
+    logicalCounter++;
+    return { 'x-timestamp': logicalCounter.toString() };
+};
+
+
+// includes timestamp in header
+export const uploadFile = (name, file) => leader_proxy.post(`/upload?name=${name}`, {file:file}, {headers: {...getTimestamp(), 'content-type': 'application/json'}});
+export const deleteFile = (name) => leader_proxy.post(`/delete?name=${name}`, {}, {headers: getTimestamp()});
+export const downloadFile = (name) => leader_proxy.get(`/download?name=${name}`, {headers: getTimestamp()});

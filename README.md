@@ -109,6 +109,8 @@ Returns all files in the database.
 https://us-east-1.aws.data.mongodb-api.com/app/filesystem-lkvhv/endpoint/files
 # replica 1
 https://us-east-1.aws.data.mongodb-api.com/app/filesystemrep1-uzxxi/endpoint/files
+# replica 2
+https://us-east-1.aws.data.mongodb-api.com/app/filesystemrep2-tyemh/endpoint/files
 ```
 ### POST /Upload
 Insert a new file document into the database.  
@@ -119,6 +121,8 @@ Insert a new file document into the database.
 https://us-east-1.aws.data.mongodb-api.com/app/filesystem-lkvhv/endpoint/upload
 # replica 1
 https://us-east-1.aws.data.mongodb-api.com/app/filesystemrep1-uzxxi/endpoint/upload
+# replica 2
+https://us-east-1.aws.data.mongodb-api.com/app/filesystemrep2-tyemh/endpoint/upload
 ```
 ### GET /Download
 Download an existing file from the database.  
@@ -129,6 +133,8 @@ Download an existing file from the database.
 https://us-east-1.aws.data.mongodb-api.com/app/filesystem-lkvhv/endpoint/download
 # replica 1
 https://us-east-1.aws.data.mongodb-api.com/app/filesystemrep1-uzxxi/endpoint/download
+# replica 2
+https://us-east-1.aws.data.mongodb-api.com/app/filesystemrep2-tyemh/endpoint/download
 ```
 ### POST /Delete
 Remove an existing file from the database.  
@@ -139,6 +145,8 @@ Remove an existing file from the database.
 https://us-east-1.aws.data.mongodb-api.com/app/filesystem-lkvhv/endpoint/delete
 # replica 1
 https://us-east-1.aws.data.mongodb-api.com/app/filesystemrep1-uzxxi/endpoint/delete
+# replica 2
+https://us-east-1.aws.data.mongodb-api.com/app/filesystemrep2-tyemh/endpoint/delete
 ```
 
 # Dependencies
